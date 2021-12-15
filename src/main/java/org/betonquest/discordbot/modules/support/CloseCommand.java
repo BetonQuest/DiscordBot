@@ -2,6 +2,8 @@ package org.betonquest.discordbot.modules.support;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Emoji;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.ThreadChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -16,12 +18,17 @@ public class CloseCommand extends ListenerAdapter {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(CloseCommand.class);
     private final TextChannel supportChannel;
+    private Emoji supportSolvedEmoji;
 
     public CloseCommand(final JDA api, final BetonBotConfig config) {
         supportChannel = config.getSupportChannel();
         if (supportChannel == null) {
-            LOGGER.warn("No text support channel with the id '" + config.supportChannelID + "' was found!");
             return;
+        }
+        if (config.supportSolvedEmoji == null || config.supportSolvedEmoji.isEmpty()) {
+            LOGGER.warn("No support solved emoji was found or set!");
+        } else {
+            supportSolvedEmoji = Emoji.fromUnicode(config.supportSolvedEmoji);
         }
         api.upsertCommand("close", "Close a support thread").queue();
         api.addEventListener(this);
@@ -39,7 +46,14 @@ public class CloseCommand extends ListenerAdapter {
                     .setEphemeral(true).queue();
             return;
         }
-
+        final GuildChannel channel = (GuildChannel) event.getChannel();
+        if (channel.getName().startsWith(supportSolvedEmoji.getAsMention())) {
+            event.reply("This thread was already closed!").setEphemeral(true).queue();
+            return;
+        }
+        if (supportSolvedEmoji != null) {
+            channel.getManager().setName(supportSolvedEmoji.getAsMention() + channel.getName()).queue();
+        }
         event.reply("Closing the Ticket").queue();
     }
 }

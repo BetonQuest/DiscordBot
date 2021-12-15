@@ -36,6 +36,10 @@ public class BetonBotConfig {
      */
     public final Long supportChannelID;
     /**
+     * The Emoji to mark solved threads with
+     */
+    public final String supportSolvedEmoji;
+    /**
      * The resolved supportChannelID
      */
     private TextChannel supportChannel;
@@ -62,6 +66,7 @@ public class BetonBotConfig {
         token = getOrCreate("Token", "", config);
         welcomeEmoji = getOrCreate("WelcomeEmoji", "U+1F44B", config);
         supportChannelID = getOrCreate("SupportChannelID", -1L, config);
+        supportSolvedEmoji = getOrCreate("SupportSolvedEmoji", "U+2705", config);
 
         yaml.dump(config, Files.newBufferedWriter(configPath));
     }
@@ -82,8 +87,16 @@ public class BetonBotConfig {
         return defaultValue;
     }
 
+    /**
+     * Init things that need a {@link JDA} instance
+     *
+     * @param api the {@link JDA} instance
+     */
     public void init(final JDA api) {
         supportChannel = api.getTextChannelById(supportChannelID);
+        if (supportChannel == null) {
+            LOGGER.warn("No text support channel with the id '" + supportChannelID + "' was found!");
+        }
     }
 
     public TextChannel getSupportChannel() {
