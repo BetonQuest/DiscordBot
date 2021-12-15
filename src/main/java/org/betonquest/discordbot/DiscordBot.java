@@ -56,6 +56,7 @@ public final class DiscordBot {
             LOGGER.error("Waited for state Ready, but there was an exception! Exception: ", e);
             return;
         }
+        config.init(api);
 
         new WelcomeMessageListener(api, config);
         new CloseCommand(api, config);

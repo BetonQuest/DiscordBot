@@ -1,5 +1,7 @@
 package org.betonquest.discordbot.config;
 
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.DumperOptions;
@@ -33,6 +35,10 @@ public class BetonBotConfig {
      * The id of the support channel
      */
     public final Long supportChannelID;
+    /**
+     * The resolved supportChannelID
+     */
+    private TextChannel supportChannel;
 
     /**
      * @param configFile the path of the config file
@@ -74,5 +80,13 @@ public class BetonBotConfig {
         }
         config.put(key, defaultValue);
         return defaultValue;
+    }
+
+    public void init(final JDA api) {
+        supportChannel = api.getTextChannelById(supportChannelID);
+    }
+
+    public TextChannel getSupportChannel() {
+        return supportChannel;
     }
 }

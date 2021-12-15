@@ -13,14 +13,15 @@ public class CloseCommand extends ListenerAdapter {
      * Logger instance.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(CloseCommand.class);
+    private final TextChannel supportChannel;
 
     public CloseCommand(final JDA api, final BetonBotConfig config) {
-        final TextChannel channel = api.getTextChannelById(config.supportChannelID);
-        if (channel == null) {
+        supportChannel = config.getSupportChannel();
+        if (supportChannel == null) {
             LOGGER.warn("No text support channel with the id '" + config.supportChannelID + "' was found!");
             return;
         }
-        channel.getGuild().upsertCommand("close", "Close a support thread").queue();
+        api.upsertCommand("close", "Close a support thread").queue();
         api.addEventListener(this);
     }
 
@@ -29,6 +30,12 @@ public class CloseCommand extends ListenerAdapter {
         if (!event.getName().equals("close")) {
             return;
         }
+        if (event.getChannel().getIdLong() != supportChannel.getIdLong()) {
+            event.reply("This command is only supported in " + supportChannel.getAsMention() + " and it's threads!")
+                    .setEphemeral(true).queue();
+            return;
+        }
+
         event.reply("Closing the Ticket").queue();
     }
 }
