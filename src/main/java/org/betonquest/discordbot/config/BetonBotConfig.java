@@ -29,6 +29,10 @@ public class BetonBotConfig {
      * The emoji to react on discords welcome message.
      */
     public final String welcomeEmoji;
+    /**
+     * The id of the support channel
+     */
+    public final Long supportChannelID;
 
     /**
      * @param configFile the path of the config file
@@ -51,6 +55,7 @@ public class BetonBotConfig {
 
         token = getOrCreate("Token", "", config);
         welcomeEmoji = getOrCreate("WelcomeEmoji", "U+1F44B", config);
+        supportChannelID = getOrCreate("SupportChannelID", -1L, config);
 
         yaml.dump(config, Files.newBufferedWriter(configPath));
     }
