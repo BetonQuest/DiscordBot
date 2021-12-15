@@ -1,7 +1,9 @@
 package org.betonquest.discordbot.modules.support;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.ThreadChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.betonquest.discordbot.config.BetonBotConfig;
@@ -30,8 +32,10 @@ public class CloseCommand extends ListenerAdapter {
         if (!event.getName().equals("close")) {
             return;
         }
-        if (event.getChannel().getIdLong() != supportChannel.getIdLong()) {
-            event.reply("This command is only supported in " + supportChannel.getAsMention() + " and it's threads!")
+
+        if (!(event.getChannelType().equals(ChannelType.GUILD_PUBLIC_THREAD) || event.getChannelType().equals(ChannelType.GUILD_PRIVATE_THREAD))
+                || ((ThreadChannel) event.getChannel()).getParentChannel().getIdLong() != supportChannel.getIdLong()) {
+            event.reply("This command is only supported in threads under the channel " + supportChannel.getAsMention() + "!")
                     .setEphemeral(true).queue();
             return;
         }
