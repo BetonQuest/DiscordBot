@@ -5,9 +5,9 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.betonquest.discordbot.config.BetonBotConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This listener adds a reaction to discords welcome message.
@@ -16,7 +16,7 @@ public class WelcomeMessageListener extends ListenerAdapter {
     /**
      * Logger instance.
      */
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(WelcomeMessageListener.class);
     /**
      * The emoji to react with.
      */

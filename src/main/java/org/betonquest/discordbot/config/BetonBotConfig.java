@@ -1,7 +1,7 @@
 package org.betonquest.discordbot.config;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
@@ -19,7 +19,7 @@ public class BetonBotConfig {
     /**
      * Logger instance.
      */
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(BetonBotConfig.class);
 
     /**
      * The token to connect to discord.
