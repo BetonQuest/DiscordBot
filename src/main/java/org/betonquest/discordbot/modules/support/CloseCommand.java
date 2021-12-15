@@ -64,7 +64,7 @@ public class CloseCommand extends ListenerAdapter {
         if (supportSolvedMessage == null) {
             event.reply("Ticket was closed!").setEphemeral(true).queue();
         } else {
-            event.reply(supportSolvedMessage).setEphemeral(true).queue();
+            event.reply(supportSolvedMessage).queue();
         }
     }
 }
