@@ -49,6 +49,6 @@ public final class DiscordBot {
             return;
         }
 
-        api.addEventListener(new WelcomeMessageListener(config));
+        new WelcomeMessageListener(api, config);
     }
 }
