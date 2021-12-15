@@ -11,7 +11,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,6 +41,8 @@ public class BetonBotConfig {
      * The Emoji to mark solved threads with
      */
     public final String supportSolvedEmoji;
+
+    public final List<String> supportSolvedMessage;
     /**
      * The resolved supportChannelID
      */
@@ -67,6 +71,10 @@ public class BetonBotConfig {
         welcomeEmoji = getOrCreate("WelcomeEmoji", "U+1F44B", config);
         supportChannelID = getOrCreate("SupportChannelID", -1L, config);
         supportSolvedEmoji = getOrCreate("SupportSolvedEmoji", "U+2705", config);
+        final List<String> defaultMessage = new ArrayList<>();
+        defaultMessage.add("This ticket was marked as solved.");
+        defaultMessage.add("Please archive the thread if there are no additional questions, otherwise ping the responsible person(s).");
+        supportSolvedMessage = getOrCreate("SupportSolvedMessage", defaultMessage, config);
 
         yaml.dump(config, Files.newBufferedWriter(configPath));
     }
