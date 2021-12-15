@@ -45,7 +45,7 @@ public class WelcomeMessageListener extends ListenerAdapter {
         }
         if (event.getMessage().getType().equals(MessageType.GUILD_MEMBER_JOIN)) {
             final Message message = event.getMessage();
-            message.addReaction(emoji).complete();
+            message.addReaction(emoji).queue();
         }
     }
 }
