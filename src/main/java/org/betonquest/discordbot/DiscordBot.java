@@ -5,35 +5,50 @@ import net.dv8tion.jda.api.JDABuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.betonquest.discordbot.config.BetonBotConfig;
-import org.betonquest.discordbot.modules.welcome.MyListener;
+import org.betonquest.discordbot.modules.welcome.WelcomeMessageListener;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
 
 /**
- * This is the main class of the Discord Bot.
+ * This is the main class of the discord Bot.
  */
-public class DiscordBot {
-    private static final Logger logger = LogManager.getLogger();
+public final class DiscordBot {
+    /**
+     * Logger instance.
+     */
+    private static final Logger LOGGER = LogManager.getLogger();
 
+    /**
+     * Empty constructor.
+     */
+    private DiscordBot() {
+    }
+
+    /**
+     * Starts the discord bot.
+     *
+     * @param args The args from the vm start
+     */
     public static void main(final String[] args) {
         final BetonBotConfig config;
         final JDA api;
         try {
             config = new BetonBotConfig("config.yml");
             if (config.token.isEmpty()) {
-                logger.error("You need to set the token in the 'config.yml'");
+                LOGGER.error("You need to set the token in the 'config.yml'");
                 return;
             }
             api = JDABuilder.createDefault(config.token).build();
 
         } catch (final IOException e) {
-            logger.error("Could not read the config file 'config.yml'! Reason: ", e);
+            LOGGER.error("Could not read the config file 'config.yml'! Reason: ", e);
             return;
         } catch (final LoginException e) {
-            logger.error("Could not connect to Discord server! Reason: ", e);
+            LOGGER.error("Could not connect to Discord server! Reason: ", e);
             return;
         }
-        api.addEventListener(new MyListener(config));
+
+        api.addEventListener(new WelcomeMessageListener(config));
     }
 }

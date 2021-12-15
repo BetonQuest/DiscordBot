@@ -7,3 +7,5 @@ Requirements can be found on our [Notion page](https://betonquest.notion.site/Be
 We use [JDA (Java Discord API)](https://github.com/DV8FromTheWorld/JDA) as the Backend API for this bot.
 
 # Features
+- Welcome message get a reaction from the bot
+  - Con be configured with `WelcomeEmoji`

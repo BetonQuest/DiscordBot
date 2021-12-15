@@ -5,29 +5,46 @@ import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This is a configuration to load settings from a file.
+ */
 public class BetonBotConfig {
-    private static final Logger logger = LogManager.getLogger();
+    /**
+     * Logger instance.
+     */
+    private static final Logger LOGGER = LogManager.getLogger();
 
+    /**
+     * The token to connect to discord.
+     */
     public final String token;
+    /**
+     * The emoji to react on discords welcome message.
+     */
     public final String welcomeEmoji;
 
+    /**
+     * @param configFile the path of the config file
+     * @throws IOException is thrown, when reading or writing the file coursed problems.
+     */
     public BetonBotConfig(final String configFile) throws IOException {
         final DumperOptions options = new DumperOptions();
         options.setIndent(4);
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 
         final Yaml yaml = new Yaml(options);
-        final File file = new File(configFile);
+        final Path configPath = Paths.get(configFile);
         final Map<String, Object> config;
-        if (file.exists()) {
-            config = yaml.load(new FileInputStream(file));
+
+        if (Files.exists(configPath)) {
+            config = yaml.load(Files.newInputStream(configPath));
         } else {
             config = new HashMap<>();
         }
@@ -35,11 +52,10 @@ public class BetonBotConfig {
         token = getOrCreate("Token", "", config);
         welcomeEmoji = getOrCreate("WelcomeEmoji", "U+1F44B", config);
 
-        logger.error(file.getAbsolutePath());
-        yaml.dump(config, new FileWriter(file));
+        yaml.dump(config, Files.newBufferedWriter(configPath));
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "PMD.AvoidCatchingGenericException"})
     private <T> T getOrCreate(final String key, final T defaultValue, final Map<String, Object> config) {
         if (config.containsKey(key)) {
             final Object value = config.get(key);
@@ -47,7 +63,7 @@ public class BetonBotConfig {
                 try {
                     return (T) value;
                 } catch (final Exception e) {
-                    logger.warn("Could not cast Config Entry '" + key + "'. Use default one.", e);
+                    LOGGER.warn("Could not cast Config Entry '" + key + "'. Use default one.", e);
                 }
             }
         }

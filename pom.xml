@@ -374,8 +374,7 @@
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>3.3.0</version>
           <configuration>
-            <!-- This is disabled because Java 16 has a stricter police for missing comments which the project does not meet yet. -->
-            <failOnWarnings>false</failOnWarnings>
+            <failOnWarnings>true</failOnWarnings>
             <show>public</show>
             <quiet>true</quiet>
           </configuration>
