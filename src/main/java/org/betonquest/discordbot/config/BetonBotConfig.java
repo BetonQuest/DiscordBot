@@ -54,7 +54,7 @@ public class BetonBotConfig {
      */
     public BetonBotConfig(final String configFile) throws IOException {
         final DumperOptions options = new DumperOptions();
-        options.setIndent(4);
+        options.setIndent(2);
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 
         final Yaml yaml = new Yaml(options);
@@ -69,30 +69,43 @@ public class BetonBotConfig {
 
         token = getOrCreate("Token", "", config);
         welcomeEmoji = getOrCreate("WelcomeEmoji", "U+1F44B", config);
-        supportChannelID = getOrCreate("SupportChannelID", -1L, config);
-        supportSolvedEmoji = getOrCreate("SupportSolvedEmoji", "U+2705", config);
+        supportChannelID = getOrCreate("Support.ChannelID", -1L, config);
+        supportSolvedEmoji = getOrCreate("Support.SolvedEmoji", "U+2705", config);
         final List<String> defaultMessage = new ArrayList<>();
         defaultMessage.add("This ticket was marked as solved.");
         defaultMessage.add("Please archive the thread if there are no additional questions, otherwise ping the responsible person(s).");
-        supportSolvedMessage = getOrCreate("SupportSolvedMessage", defaultMessage, config);
+        supportSolvedMessage = getOrCreate("Support.SolvedMessage", defaultMessage, config);
 
         yaml.dump(config, Files.newBufferedWriter(configPath));
     }
 
     @SuppressWarnings({"unchecked", "PMD.AvoidCatchingGenericException"})
     private <T> T getOrCreate(final String key, final T defaultValue, final Map<String, Object> config) {
-        if (config.containsKey(key)) {
-            final Object value = config.get(key);
-            if (value != null) {
-                try {
-                    return (T) value;
-                } catch (final Exception e) {
-                    LOGGER.warn("Could not cast Config Entry '" + key + "'. Use default one.", e);
+        final int splitIndex = key.indexOf('.');
+        final String firstKey = splitIndex == -1 ? key : key.substring(0, splitIndex);
+        final String restkey = splitIndex == -1 ? null : key.substring(splitIndex + 1);
+        if (restkey == null) {
+            if (config.containsKey(firstKey)) {
+                final Object value = config.get(firstKey);
+                if (value != null) {
+                    try {
+                        return (T) value;
+                    } catch (final Exception e) {
+                        LOGGER.warn("Could not cast Config Entry '" + key + "'. Use default one.", e);
+                    }
                 }
             }
+            config.put(key, defaultValue);
+            return defaultValue;
         }
-        config.put(key, defaultValue);
-        return defaultValue;
+        final Map<String, Object> subConfig;
+        if (config.containsKey(firstKey)) {
+            subConfig = (Map<String, Object>) config.get(firstKey);
+        } else {
+            subConfig = new HashMap<>();
+            config.put(firstKey, subConfig);
+        }
+        return getOrCreate(restkey, defaultValue, subConfig);
     }
 
     /**
