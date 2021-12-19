@@ -32,10 +32,10 @@ public class ConfigEmbedBuilder {
      * Builds a {@link MessageEmbed} from a configuration {@link Map},
      * that can than be obtained with {@link ConfigEmbedBuilder#getEmbed()}.
      *
-     * @param embedData     the raw config part, that contains the {@link MessageEmbed} configuration
-     * @param exceptionPath The path, where the config part is located, to log better error messages
+     * @param embedData the raw config part, that contains the {@link MessageEmbed} configuration
+     * @param fullPath  The path, where the config part is located, to log better error messages
      */
-    public ConfigEmbedBuilder(final Map<String, Object> embedData, final String exceptionPath) {
+    public ConfigEmbedBuilder(final Map<String, Object> embedData, final String fullPath) {
         final EmbedBuilder builder = new EmbedBuilder();
 
         final int color = (int) embedData.getOrDefault("Color", null);
@@ -78,10 +78,10 @@ public class ConfigEmbedBuilder {
         builder.setFooter(footer, footerIconUrl);
 
         if (builder.isEmpty()) {
-            LOGGER.warn("Your embed message in the config at path '" + exceptionPath + "' is empty!");
+            LOGGER.warn("Your embed message in the config at path '" + fullPath + "' is empty!");
         }
         if (!builder.isValidLength()) {
-            LOGGER.warn("Your embed message in the config at path '" + exceptionPath + "' is too long!");
+            LOGGER.warn("Your embed message in the config at path '" + fullPath + "' is too long!");
         }
         embed = builder.build();
     }

@@ -10,9 +10,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 /**
- * This is the main class of the discord Bot.
+ * This is the main class of the Discord Bot.
  */
 public final class DiscordBot {
     /**
@@ -27,7 +28,7 @@ public final class DiscordBot {
     }
 
     /**
-     * Starts the discord bot.
+     * Starts the Discord bot.
      *
      * @param args The args from the vm start
      */
@@ -35,7 +36,7 @@ public final class DiscordBot {
         final BetonBotConfig config;
         final JDA api;
         try {
-            config = new BetonBotConfig("config.yml");
+            config = new BetonBotConfig(Paths.get("config.yml"));
             if (config.token == null) {
                 LOGGER.error("You need to set the token in the 'config.yml'");
                 return;

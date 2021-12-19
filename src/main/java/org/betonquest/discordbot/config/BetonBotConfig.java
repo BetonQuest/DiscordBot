@@ -13,7 +13,6 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -31,11 +30,11 @@ public class BetonBotConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(BetonBotConfig.class);
 
     /**
-     * The token to connect to discord.
+     * The token to connect to Discord.
      */
     public final String token;
     /**
-     * The guild id for the target discord server.
+     * The guild id for the target Discord server.
      */
     public final Long guildID;
     /**
@@ -67,28 +66,17 @@ public class BetonBotConfig {
      */
     private final List<TextChannel> supportChannels;
     /**
-     * The {@link Guild} of the discord managed by this bot.
+     * The {@link Guild} of the Discord managed by this bot.
      */
     private Guild guild;
 
     /**
-     * @param configFile the path of the config file
+     * @param configPath the path of the config file
      * @throws IOException is thrown, when reading or writing the file coursed problems.
      */
-    public BetonBotConfig(final String configFile) throws IOException {
-        final DumperOptions options = new DumperOptions();
-        options.setIndent(4);
-        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-
-        final Yaml yaml = new Yaml(options);
-        final Path configPath = Paths.get(configFile);
-        final Map<String, Object> config;
-
-        if (Files.exists(configPath)) {
-            config = yaml.load(Files.newInputStream(configPath));
-        } else {
-            config = new LinkedHashMap<>();
-        }
+    public BetonBotConfig(final Path configPath) throws IOException {
+        final Yaml yaml = getYaml();
+        final Map<String, Object> config = getConfig(yaml, configPath);
 
         token = checkEmpty(getOrCreate("Token", "", config));
         guildID = getOrCreate("GuildID", -1L, config);
@@ -106,6 +94,45 @@ public class BetonBotConfig {
         yaml.dump(config, Files.newBufferedWriter(configPath));
     }
 
+    /**
+     * Init things that need a {@link JDA} instance
+     *
+     * @param api the {@link JDA} instance
+     */
+    public void init(final JDA api) {
+        guild = api.getGuildById(guildID);
+        if (guild == null) {
+            LOGGER.warn("No guild with the id '" + guildID + "' was found!");
+            return;
+        }
+
+        for (final Long supportChannelID : supportChannelIDs) {
+            final TextChannel textChannel = guild.getTextChannelById(supportChannelID);
+            if (textChannel == null) {
+                LOGGER.warn("No text support channel with the id '" + supportChannelIDs + "' was found!");
+            } else {
+                supportChannels.add(textChannel);
+                LOGGER.info("Added support channel :" + textChannel.getName());
+            }
+        }
+    }
+
+    private Yaml getYaml() {
+        final DumperOptions options = new DumperOptions();
+        options.setIndent(4);
+        options.setIndicatorIndent(2);
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        return new Yaml(options);
+    }
+
+    private Map<String, Object> getConfig(final Yaml yaml, final Path configPath) throws IOException {
+        if (Files.exists(configPath)) {
+            return yaml.load(Files.newInputStream(configPath));
+        } else {
+            return new LinkedHashMap<>();
+        }
+    }
+
     @SuppressWarnings({"unchecked", "PMD.AvoidCatchingGenericException"})
     private <T> T getOrCreate(final String key, final T defaultValue, final Map<String, Object> config) {
         final int splitIndex = key.indexOf('.');
@@ -118,7 +145,7 @@ public class BetonBotConfig {
                     try {
                         return (T) value;
                     } catch (final Exception e) {
-                        LOGGER.warn("Could not cast Config Entry '" + key + "'. Use default one.", e);
+                        LOGGER.warn("Could not cast Config Entry '" + key + "'. Using default one.", e);
                     }
                 }
             }
@@ -150,27 +177,6 @@ public class BetonBotConfig {
         return string == null ? null : string.isEmpty() ? null : string;
     }
 
-    /**
-     * Init things that need a {@link JDA} instance
-     *
-     * @param api the {@link JDA} instance
-     */
-    public void init(final JDA api) {
-        guild = api.getGuildById(guildID);
-        if (guild == null) {
-            LOGGER.warn("No guild with the id '" + guildID + "' was found!");
-            return;
-        }
-        for (final Long supportChannelID : supportChannelIDs) {
-            final TextChannel textChannel = guild.getTextChannelById(supportChannelID);
-            if (textChannel == null) {
-                LOGGER.warn("No text support channel with the id '" + supportChannelIDs + "' was found!");
-            } else {
-                supportChannels.add(textChannel);
-                LOGGER.info("Added support channel :" + textChannel.getName());
-            }
-        }
-    }
 
     /**
      * Get the list of all support channels.

@@ -59,6 +59,7 @@ public class CloseCommand extends ListenerAdapter {
             return;
         }
         supportClosedEmoji = Emoji.fromUnicode(config.supportClosedEmoji);
+
         if (config.updateCommands) {
             api.upsertCommand(COMMAND, "Close a support thread").setDefaultEnabled(false).queue((createdCommand) -> {
                 final Set<CommandPrivilege> collect = config.supportRoleIDs.stream().map(CommandPrivilege::enableRole).collect(Collectors.toSet());
@@ -94,8 +95,6 @@ public class CloseCommand extends ListenerAdapter {
         } else {
             event.replyEmbeds(config.supportClosedEmbed).queue();
         }
-        if (supportClosedEmoji != null) {
-            channel.getManager().setName(supportClosedEmoji.getAsMention() + channel.getName()).queue();
-        }
+        channel.getManager().setName(emoji + channel.getName()).queue();
     }
 }
