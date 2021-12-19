@@ -2,7 +2,7 @@ package org.betonquest.discordbot.config;
 
 import com.google.common.collect.Lists;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.slf4j.Logger;
@@ -19,11 +19,11 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * This is a configuration to load settings from a file.
  */
+@SuppressWarnings("PMD.DataClass")
 public class BetonBotConfig {
     /**
      * Logger instance.
@@ -35,13 +35,21 @@ public class BetonBotConfig {
      */
     public final String token;
     /**
+     * The guild id for the target discord server.
+     */
+    public final Long guildID;
+    /**
      * Should the commands be registered again.
      */
-    public final boolean registerCommands;
+    public final boolean updateCommands;
     /**
      * The emoji to react on discords welcome message.
      */
     public final String welcomeEmoji;
+    /**
+     * The role, that can manage support threads.
+     */
+    public final List<Long> supportRoleIDs;
     /**
      * The ids of the support channels.
      */
@@ -58,6 +66,10 @@ public class BetonBotConfig {
      * The closed supportChannelIDs.
      */
     private final List<TextChannel> supportChannels;
+    /**
+     * The {@link Guild} of the discord managed by this bot.
+     */
+    private Guild guild;
 
     /**
      * @param configFile the path of the config file
@@ -79,16 +91,16 @@ public class BetonBotConfig {
         }
 
         token = checkEmpty(getOrCreate("Token", "", config));
-        registerCommands = getOrCreate("RegisterCommands", true, config);
+        guildID = getOrCreate("GuildID", -1L, config);
+        updateCommands = getOrCreate("UpdateCommands", true, config);
         welcomeEmoji = checkEmpty(getOrCreate("WelcomeEmoji", "U+1F44B", config));
+        supportRoleIDs = getOrCreate("Support.RoleIDs", Lists.newArrayList(-1L), config);
         supportChannelIDs = getOrCreate("Support.ChannelIDs", Lists.newArrayList(-1L), config);
         supportClosedEmoji = checkEmpty(getOrCreate("Support.ClosedEmoji", "U+2705", config));
-        supportClosedEmbed = new ConfigEmbedBuilder(
-                getOrCreate("Support.ClosedMessage", ConfigEmbedBuilder.getDefaultConfigEmbed(), config)
-                , "Support.ClosedMessage").getEmbed();
+        supportClosedEmbed = getOrCreateEmbed("Support.ClosedMessage", config);
 
-        if (registerCommands) {
-            config.put("RegisterCommands", false);
+        if (updateCommands) {
+            config.put("UpdateCommands", false);
         }
         supportChannels = new ArrayList<>();
         yaml.dump(config, Files.newBufferedWriter(configPath));
@@ -128,6 +140,12 @@ public class BetonBotConfig {
         return getOrCreate(restKey, defaultValue, subConfig);
     }
 
+    private MessageEmbed getOrCreateEmbed(final String key, final Map<String, Object> config) {
+        return new ConfigEmbedBuilder(
+                getOrCreate(key, ConfigEmbedBuilder.getDefaultConfigEmbed(), config)
+                , key).getEmbed();
+    }
+
     private String checkEmpty(final String string) {
         return string == null ? null : string.isEmpty() ? null : string;
     }
@@ -138,12 +156,18 @@ public class BetonBotConfig {
      * @param api the {@link JDA} instance
      */
     public void init(final JDA api) {
+        guild = api.getGuildById(guildID);
+        if (guild == null) {
+            LOGGER.warn("No guild with the id '" + guildID + "' was found!");
+            return;
+        }
         for (final Long supportChannelID : supportChannelIDs) {
-            final TextChannel textChannel = api.getTextChannelById(supportChannelID);
-            if (supportChannels == null) {
+            final TextChannel textChannel = guild.getTextChannelById(supportChannelID);
+            if (textChannel == null) {
                 LOGGER.warn("No text support channel with the id '" + supportChannelIDs + "' was found!");
             } else {
                 supportChannels.add(textChannel);
+                LOGGER.info("Added support channel :" + textChannel.getName());
             }
         }
     }
@@ -158,11 +182,11 @@ public class BetonBotConfig {
     }
 
     /**
-     * Get the list of IDs of all support channels.
+     * Get the {@link Guild} of this bot.
      *
-     * @return list of channel IDs
+     * @return the {@link Guild}
      */
-    public List<Long> getSupportChannelsIDs() {
-        return supportChannels.stream().map(ISnowflake::getIdLong).collect(Collectors.toUnmodifiableList());
+    public Guild getGuild() {
+        return guild;
     }
 }
