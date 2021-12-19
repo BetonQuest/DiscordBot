@@ -1,6 +1,9 @@
 package org.betonquest.discordbot.config;
 
+import com.google.common.collect.Lists;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,9 +15,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * This is a configuration to load settings from a file.
@@ -30,23 +35,29 @@ public class BetonBotConfig {
      */
     public final String token;
     /**
+     * Should the commands be registered again.
+     */
+    public final boolean registerCommands;
+    /**
      * The emoji to react on discords welcome message.
      */
     public final String welcomeEmoji;
     /**
-     * The id of the support channel
+     * The ids of the support channels.
      */
-    public final Long supportChannelID;
+    public final List<Long> supportChannelIDs;
     /**
-     * The Emoji to mark solved threads with
+     * The Emoji to mark closed threads with.
      */
-    public final String supportSolvedEmoji;
-
-    public final List<String> supportSolvedMessage;
+    public final String supportClosedEmoji;
     /**
-     * The resolved supportChannelID
+     * The message to show, when a thread was marked as closed.
      */
-    private TextChannel supportChannel;
+    public final MessageEmbed supportClosedEmbed;
+    /**
+     * The closed supportChannelIDs.
+     */
+    private final List<TextChannel> supportChannels;
 
     /**
      * @param configFile the path of the config file
@@ -54,7 +65,7 @@ public class BetonBotConfig {
      */
     public BetonBotConfig(final String configFile) throws IOException {
         final DumperOptions options = new DumperOptions();
-        options.setIndent(2);
+        options.setIndent(4);
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 
         final Yaml yaml = new Yaml(options);
@@ -67,15 +78,19 @@ public class BetonBotConfig {
             config = new HashMap<>();
         }
 
-        token = getOrCreate("Token", "", config);
-        welcomeEmoji = getOrCreate("WelcomeEmoji", "U+1F44B", config);
-        supportChannelID = getOrCreate("Support.ChannelID", -1L, config);
-        supportSolvedEmoji = getOrCreate("Support.SolvedEmoji", "U+2705", config);
-        final List<String> defaultMessage = new ArrayList<>();
-        defaultMessage.add("This ticket was marked as solved.");
-        defaultMessage.add("Please archive the thread if there are no additional questions, otherwise ping the responsible person(s).");
-        supportSolvedMessage = getOrCreate("Support.SolvedMessage", defaultMessage, config);
+        token = checkEmpty(getOrCreate("Token", "", config));
+        registerCommands = getOrCreate("RegisterCommands", true, config);
+        welcomeEmoji = checkEmpty(getOrCreate("WelcomeEmoji", "U+1F44B", config));
+        supportChannelIDs = getOrCreate("Support.ChannelIDs", Lists.newArrayList(-1L), config);
+        supportClosedEmoji = checkEmpty(getOrCreate("Support.ClosedEmoji", "U+2705", config));
+        supportClosedEmbed = new ConfigEmbedBuilder(
+                getOrCreate("Support.ClosedMessage", ConfigEmbedBuilder.getDefaultConfigEmbed(), config)
+                , "Support.ClosedMessage").getEmbed();
 
+        if (registerCommands) {
+            config.put("RegisterCommands", false);
+        }
+        supportChannels = new ArrayList<>();
         yaml.dump(config, Files.newBufferedWriter(configPath));
     }
 
@@ -83,8 +98,8 @@ public class BetonBotConfig {
     private <T> T getOrCreate(final String key, final T defaultValue, final Map<String, Object> config) {
         final int splitIndex = key.indexOf('.');
         final String firstKey = splitIndex == -1 ? key : key.substring(0, splitIndex);
-        final String restkey = splitIndex == -1 ? null : key.substring(splitIndex + 1);
-        if (restkey == null) {
+        final String restKey = splitIndex == -1 ? null : key.substring(splitIndex + 1);
+        if (restKey == null) {
             if (config.containsKey(firstKey)) {
                 final Object value = config.get(firstKey);
                 if (value != null) {
@@ -105,7 +120,11 @@ public class BetonBotConfig {
             subConfig = new HashMap<>();
             config.put(firstKey, subConfig);
         }
-        return getOrCreate(restkey, defaultValue, subConfig);
+        return getOrCreate(restKey, defaultValue, subConfig);
+    }
+
+    private String checkEmpty(final String string) {
+        return string == null ? null : string.isEmpty() ? null : string;
     }
 
     /**
@@ -114,13 +133,31 @@ public class BetonBotConfig {
      * @param api the {@link JDA} instance
      */
     public void init(final JDA api) {
-        supportChannel = api.getTextChannelById(supportChannelID);
-        if (supportChannel == null) {
-            LOGGER.warn("No text support channel with the id '" + supportChannelID + "' was found!");
+        for (final Long supportChannelID : supportChannelIDs) {
+            final TextChannel textChannel = api.getTextChannelById(supportChannelID);
+            if (supportChannels == null) {
+                LOGGER.warn("No text support channel with the id '" + supportChannelIDs + "' was found!");
+            } else {
+                supportChannels.add(textChannel);
+            }
         }
     }
 
-    public TextChannel getSupportChannel() {
-        return supportChannel;
+    /**
+     * Get the list of all support channels.
+     *
+     * @return list of channels
+     */
+    public List<TextChannel> getSupportChannels() {
+        return new ArrayList<>(Collections.unmodifiableList(supportChannels));
+    }
+
+    /**
+     * Get the list of IDs of all support channels.
+     *
+     * @return list of channel IDs
+     */
+    public List<Long> getSupportChannelsIDs() {
+        return supportChannels.stream().map(ISnowflake::getIdLong).collect(Collectors.toUnmodifiableList());
     }
 }

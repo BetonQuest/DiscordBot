@@ -31,7 +31,7 @@ public class WelcomeMessageListener extends ListenerAdapter {
     public WelcomeMessageListener(final JDA api, final BetonBotConfig config) {
         super();
         emoji = config.welcomeEmoji;
-        if (emoji == null || emoji.isEmpty()) {
+        if (emoji == null) {
             LOGGER.warn("No welcome emoji was found or set!");
             return;
         }

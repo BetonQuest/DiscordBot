@@ -36,7 +36,7 @@ public final class DiscordBot {
         final JDA api;
         try {
             config = new BetonBotConfig("config.yml");
-            if (config.token.isEmpty()) {
+            if (config.token == null) {
                 LOGGER.error("You need to set the token in the 'config.yml'");
                 return;
             }
