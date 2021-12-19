@@ -9,3 +9,9 @@ We use [JDA (Java Discord API)](https://github.com/DV8FromTheWorld/JDA) as the B
 # Features
 - Welcome message get a reaction from the bot
   - Con be configured with `WelcomeEmoji`
+- `/close` command
+  - can be configured:
+    - which roles do have permissions
+    - which channels are effected
+    - an emoji to mark closed threads
+    - a message as an embed, when a thread is closed 
