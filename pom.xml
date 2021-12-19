@@ -153,14 +153,6 @@
               <createDependencyReducedPom>false</createDependencyReducedPom>
               <shadedArtifactAttached>true</shadedArtifactAttached>
               <minimizeJar>true</minimizeJar>
-              <artifactSet>
-                <includes>
-                  <include>org.apache.maven</include>
-                  <include>org.apache.commons</include>
-                  <include>com.google.guava</include>
-                  <include>commons-io</include>
-                </includes>
-              </artifactSet>
               <filters>
                 <filter>
                   <artifact>*</artifact>
