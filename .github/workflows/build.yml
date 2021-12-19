@@ -32,6 +32,6 @@ jobs:
                 run: |
                     mvn -B verify
             -   name: Upload to Server
-                if: "github.repository == 'BetonQuest/DiscordBot' && github.event_name == 'push'"
+                if: "github.repository == 'BetonQuest/DiscordBot' && github.ref == 'refs/heads/master' && github.event_name == 'push'"
                 run: |
                     echo Not supported yet!
