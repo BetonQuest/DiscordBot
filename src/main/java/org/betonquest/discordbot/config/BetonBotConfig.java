@@ -16,7 +16,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -75,7 +75,7 @@ public class BetonBotConfig {
         if (Files.exists(configPath)) {
             config = yaml.load(Files.newInputStream(configPath));
         } else {
-            config = new HashMap<>();
+            config = new LinkedHashMap<>();
         }
 
         token = checkEmpty(getOrCreate("Token", "", config));
@@ -122,7 +122,7 @@ public class BetonBotConfig {
         if (config.containsKey(firstKey)) {
             subConfig = (Map<String, Object>) config.get(firstKey);
         } else {
-            subConfig = new HashMap<>();
+            subConfig = new LinkedHashMap<>();
             config.put(firstKey, subConfig);
         }
         return getOrCreate(restKey, defaultValue, subConfig);

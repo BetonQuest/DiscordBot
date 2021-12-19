@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -93,7 +93,7 @@ public class ConfigEmbedBuilder {
      * @return the template {@link Map}
      */
     public static Map<String, Object> getDefaultConfigEmbed() {
-        final Map<String, Object> embed = new HashMap<>();
+        final Map<String, Object> embed = new LinkedHashMap<>();
         embed.put("Color", Color.GREEN.getRGB());
         embed.put("Title", "Custom Title");
         embed.put("TitleUrl", "https://Custom.Title/URL");
@@ -104,11 +104,11 @@ public class ConfigEmbedBuilder {
         embed.put("ThumbnailUrl", "https://Custom.Thumbnail/URL");
         embed.put("Description", Lists.newArrayList("Custom Description"));
 
-        final Map<String, Object> field1 = new HashMap<>();
+        final Map<String, Object> field1 = new LinkedHashMap<>();
         field1.put("Name", "Custom Field");
         field1.put("Value", Lists.newArrayList("Custom Field Value"));
         field1.put("Inline", false);
-        final Map<String, Object> field2 = new HashMap<>();
+        final Map<String, Object> field2 = new LinkedHashMap<>();
         field2.put("Inline", false);
         final List<Map<String, Object>> fields = new ArrayList<>();
         fields.add(field1);
