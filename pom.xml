@@ -7,8 +7,8 @@
     <current-date>${maven.build.timestamp}</current-date>
     <maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
   </properties>
 
   <name>DiscordBot</name>
@@ -277,32 +277,32 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-shade-plugin</artifactId>
-          <version>3.2.4</version>
+          <version>3.3.0-SNAPSHOT</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-pmd-plugin</artifactId>
-          <version>3.14.0</version>
+          <version>3.15.0</version>
           <dependencies>
             <dependency>
               <groupId>net.sourceforge.pmd</groupId>
               <artifactId>pmd-core</artifactId>
-              <version>6.34.0</version>
+              <version>6.38.0</version>
             </dependency>
             <dependency>
               <groupId>net.sourceforge.pmd</groupId>
               <artifactId>pmd-java</artifactId>
-              <version>6.34.0</version>
+              <version>6.38.0</version>
             </dependency>
             <dependency>
               <groupId>net.sourceforge.pmd</groupId>
               <artifactId>pmd-javascript</artifactId>
-              <version>6.34.0</version>
+              <version>6.38.0</version>
             </dependency>
             <dependency>
               <groupId>net.sourceforge.pmd</groupId>
               <artifactId>pmd-jsp</artifactId>
-              <version>6.34.0</version>
+              <version>6.38.0</version>
             </dependency>
           </dependencies>
           <configuration>

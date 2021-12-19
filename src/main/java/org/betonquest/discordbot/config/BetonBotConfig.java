@@ -113,6 +113,11 @@ public class BetonBotConfig {
             config.put(key, defaultValue);
             return defaultValue;
         }
+        return getOrCreateSubConfig(defaultValue, config, firstKey, restKey);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T getOrCreateSubConfig(final T defaultValue, final Map<String, Object> config, final String firstKey, final String restKey) {
         final Map<String, Object> subConfig;
         if (config.containsKey(firstKey)) {
             subConfig = (Map<String, Object>) config.get(firstKey);
