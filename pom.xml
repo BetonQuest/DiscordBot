@@ -30,12 +30,19 @@
     <url>https://www.betonquest.org</url>
   </organization>
 
+  <repositories>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
+
   <dependencies>
     <!-- only dependencies from maven central -->
     <dependency>
-      <groupId>net.dv8tion</groupId>
+      <groupId>com.github.DV8FromTheWorld</groupId>
       <artifactId>JDA</artifactId>
-      <version>5.0.0-alpha.2</version>
+      <version>5.0.0-alpha.3</version>
       <exclusions>
         <exclusion>
           <groupId>club.minnced</groupId>
