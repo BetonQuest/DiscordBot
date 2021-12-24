@@ -3,8 +3,10 @@ package org.betonquest.discordbot.modules.support;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Emoji;
-import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.ThreadChannel;
+import net.dv8tion.jda.api.entities.ThreadMember;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
@@ -12,6 +14,7 @@ import org.betonquest.discordbot.config.BetonBotConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -84,7 +87,7 @@ public class CloseCommand extends ListenerAdapter {
     }
 
     private void close(final SlashCommandEvent event) {
-        final GuildChannel channel = (GuildChannel) event.getChannel();
+        final ThreadChannel channel = (ThreadChannel) event.getChannel();
         if (supportClosedEmoji != null && channel.getName().startsWith(supportClosedEmoji.getAsMention())) {
             event.reply("This thread is already closed!").setEphemeral(true).queue();
             return;
@@ -96,5 +99,21 @@ public class CloseCommand extends ListenerAdapter {
             event.replyEmbeds(config.supportClosedEmbed).queue();
         }
         channel.getManager().setName(emoji + channel.getName()).queue();
+
+        removeSubscriber(channel);
+    }
+
+    private void removeSubscriber(final ThreadChannel channel) {
+        final List<Member> members = channel.getThreadMembers().stream().map(ThreadMember::getMember)
+                .filter(member ->
+                        member.getRoles().stream().map(ISnowflake::getIdLong).toList()
+                                .contains(config.supportSubscriptionRoleID))
+                .toList();
+
+        channel.getHistoryFromBeginning(1).queue(history -> {
+            final Member firstMember = history.getRetrievedHistory().get(0).getMember();
+            members.stream().filter(member -> member != firstMember)
+                    .forEach(member -> channel.removeThreadMember(member).queue());
+        }, fail -> members.forEach(member -> channel.removeThreadMember(member).queue()));
     }
 }

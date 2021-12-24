@@ -46,6 +46,10 @@ public class BetonBotConfig {
      */
     public final String welcomeEmoji;
     /**
+     * The role id that is added and removed to support threads.
+     */
+    public final Long supportSubscriptionRoleID;
+    /**
      * The role, that can manage support threads.
      */
     public final List<Long> supportRoleIDs;
@@ -82,6 +86,7 @@ public class BetonBotConfig {
         guildID = getOrCreate("GuildID", -1L, config);
         updateCommands = getOrCreate("UpdateCommands", true, config);
         welcomeEmoji = checkEmpty(getOrCreate("WelcomeEmoji", "U+1F44B", config));
+        supportSubscriptionRoleID = getOrCreate("Support.SubscriptionRoleID", -1L, config);
         supportRoleIDs = getOrCreate("Support.RoleIDs", Lists.newArrayList(-1L), config);
         supportChannelIDs = getOrCreate("Support.ChannelIDs", Lists.newArrayList(-1L), config);
         supportClosedEmoji = checkEmpty(getOrCreate("Support.ClosedEmoji", "U+2705", config));
