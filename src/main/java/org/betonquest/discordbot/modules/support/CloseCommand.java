@@ -3,10 +3,9 @@ package org.betonquest.discordbot.modules.support;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Emoji;
-import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.ThreadChannel;
-import net.dv8tion.jda.api.entities.ThreadMember;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
@@ -96,22 +95,19 @@ public class CloseCommand extends ListenerAdapter {
         if (config.supportClosedEmbed == null) {
             event.reply(emoji + "Thread closed").setEphemeral(true).queue();
         } else {
-            event.replyEmbeds(config.supportClosedEmbed).queue();
+            event.replyEmbeds(config.supportClosedEmbed.getEmbed()).queue();
         }
-        channel.getManager().setName(emoji + channel.getName()).queue();
 
         removeSubscriber(channel);
+        channel.getManager().setName(emoji + channel.getName()).queue();
     }
 
     private void removeSubscriber(final ThreadChannel channel) {
-        final List<Member> members = channel.getThreadMembers().stream().map(ThreadMember::getMember)
-                .filter(member ->
-                        member.getRoles().stream().map(ISnowflake::getIdLong).toList()
-                                .contains(config.supportSubscriptionRoleID))
-                .toList();
+        final List<Member> members = config.getGuild().getMembersWithRoles(config.getGuild().getRoleById(config.supportSubscriptionRoleID));
 
         channel.getHistoryFromBeginning(1).queue(history -> {
-            final Member firstMember = history.getRetrievedHistory().get(0).getMember();
+            final Message firstMessage = history.getRetrievedHistory().get(0);
+            final Member firstMember = firstMessage.getReferencedMessage() == null ? firstMessage.getMember() : firstMessage.getReferencedMessage().getMember();
             members.stream().filter(member -> member != firstMember)
                     .forEach(member -> channel.removeThreadMember(member).queue());
         }, fail -> members.forEach(member -> channel.removeThreadMember(member).queue()));

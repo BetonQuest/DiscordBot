@@ -3,10 +3,10 @@ package org.betonquest.discordbot;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.betonquest.discordbot.config.BetonBotConfig;
 import org.betonquest.discordbot.modules.support.CloseCommand;
+import org.betonquest.discordbot.modules.support.NewThreadListener;
 import org.betonquest.discordbot.modules.welcome.WelcomeMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +47,6 @@ public final class DiscordBot {
             api = JDABuilder.createDefault(config.token)
                     .enableIntents(GatewayIntent.GUILD_MEMBERS)
                     .setMemberCachePolicy(MemberCachePolicy.ALL)
-                    .setChunkingFilter(ChunkingFilter.ALL)
                     .build();
 
         } catch (final IOException e) {
@@ -65,8 +64,10 @@ public final class DiscordBot {
             return;
         }
         config.init(api);
+        config.getGuild().loadMembers().get();
 
         new WelcomeMessageListener(api, config);
         new CloseCommand(api, config);
+        new NewThreadListener(api, config);
     }
 }
