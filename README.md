@@ -14,4 +14,9 @@ We use [JDA (Java Discord API)](https://github.com/DV8FromTheWorld/JDA) as the B
     - which roles do have permissions
     - which channels are effected
     - an emoji to mark closed threads
-    - a message as an embed, when a thread is closed 
+    - a message as an embed, when a thread is closed
+    - a `Support.SubscriptionRoleID` role that will be removed when the thread was
+      - the person who needed help will not be removed, even if he has the role
+- new support threads
+  - an embed message, that will be sent in the thread
+  - the `Support.SubscriptionRoleID` will be automatically invited with a ping
