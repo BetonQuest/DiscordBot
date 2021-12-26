@@ -17,6 +17,10 @@ import org.slf4j.LoggerFactory;
  */
 public class NewThreadListener extends ListenerAdapter {
     /**
+     * The amount of retries to get the history.
+     */
+    public static final int RETRIES = 10;
+    /**
      * Logger instance.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(NewThreadListener.class);
@@ -52,17 +56,34 @@ public class NewThreadListener extends ListenerAdapter {
         final Role role = config.getGuild().getRoleById(config.supportSubscriptionRoleID);
         final String roleMention = role == null ? "<role not found>" : role.getAsMention();
 
+        sendMessageRetry(0, channel, roleMention);
+    }
+
+    private void sendMessageRetry(final int retry, final ThreadChannel channel, final String roleMention) {
         channel.getHistoryFromBeginning(1).queue(history -> {
+            if (history.isEmpty()) {
+                if (retry < RETRIES) {
+                    try {
+                        Thread.sleep(500);
+                        sendMessageRetry(retry + 1, channel, roleMention);
+                        return;
+                    } catch (final InterruptedException e) {
+                        LOGGER.warn(e.getMessage(), e);
+                    }
+                }
+                sendMessage(channel, "", roleMention);
+                return;
+            }
+
             final Message firstMessage = history.getRetrievedHistory().get(0);
             final Member member = firstMessage.getReferencedMessage() == null ? firstMessage.getMember() : firstMessage.getReferencedMessage().getMember();
-            final String memberMention = member == null ? "" : member.getAsMention();
+            sendMessage(channel, member == null ? "" : member.getAsMention(), roleMention);
+        }, fail -> sendMessage(channel, "", roleMention));
+    }
 
-            channel.sendMessage("Hey " + memberMention).queue();
-            channel.sendMessageEmbeds(config.supportNewEmbed.getEmbed()).queue();
-            channel.sendMessage("Hey " + roleMention + ", someone needs your help!").queue();
-        }, fail -> {
-            channel.sendMessageEmbeds(config.supportNewEmbed.getEmbed()).queue();
-            channel.sendMessage("Hey " + roleMention + ", someone needs your help!").queue();
-        });
+    private void sendMessage(final ThreadChannel channel, final String memberMention, final String roleMention) {
+        channel.sendMessage("Hey " + memberMention).queue();
+        channel.sendMessageEmbeds(config.supportNewEmbed.getEmbed()).queue();
+        channel.sendMessage("Hey " + roleMention + ", someone needs your help!").queue();
     }
 }
