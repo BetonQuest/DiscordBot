@@ -59,7 +59,10 @@ public class NewThreadListener extends ListenerAdapter {
 
             channel.sendMessage("Hey " + memberMention).queue();
             channel.sendMessageEmbeds(config.supportNewEmbed.getEmbed()).queue();
-            channel.sendMessage("Let's involve the " + roleMention + "'s!").queue();
-        }, fail -> channel.sendMessage("Let's involve the " + roleMention + "'s!").queue());
+            channel.sendMessage("Hey " + roleMention + ", someone needs your help!").queue();
+        }, fail -> {
+            channel.sendMessageEmbeds(config.supportNewEmbed.getEmbed()).queue();
+            channel.sendMessage("Hey " + roleMention + ", someone needs your help!").queue();
+        });
     }
 }
