@@ -116,31 +116,27 @@ public class ConfigEmbedBuilder {
         footerIconUrl = (String) embedData.getOrDefault("FooterIconUrl", null);
     }
 
-    private ConfigEmbedBuilder(final String fullPath, final List<Variable> variables, final String color,
-                               final String title, final String titleUrl, final String author, final String authorUrl,
-                               final String authorIconUrl, final String imageUrl, final String thumbnailUrl,
-                               final String description, final List<Triple<String, String, String>> fields,
-                               final String footer, final String footerIconUrl) {
-        this.fullPath = fullPath;
+    private ConfigEmbedBuilder(final ConfigEmbedBuilder other) {
+        this.fullPath = other.fullPath;
         this.variables = new ArrayList<>();
-        for (final Variable variable : variables) {
+        for (final Variable variable : other.variables) {
             this.variables.add(new Variable(variable.placeholder, variable.value));
         }
-        this.color = color;
-        this.title = title;
-        this.titleUrl = titleUrl;
-        this.author = author;
-        this.authorUrl = authorUrl;
-        this.authorIconUrl = authorIconUrl;
-        this.imageUrl = imageUrl;
-        this.thumbnailUrl = thumbnailUrl;
-        this.description = description;
+        this.color = other.color;
+        this.title = other.title;
+        this.titleUrl = other.titleUrl;
+        this.author = other.author;
+        this.authorUrl = other.authorUrl;
+        this.authorIconUrl = other.authorIconUrl;
+        this.imageUrl = other.imageUrl;
+        this.thumbnailUrl = other.thumbnailUrl;
+        this.description = other.description;
         this.fields = new ArrayList<>();
-        for (final Triple<String, String, String> field : fields) {
+        for (final Triple<String, String, String> field : other.fields) {
             this.fields.add(Triple.of(field.getLeft(), field.getMiddle(), field.getRight()));
         }
-        this.footer = footer;
-        this.footerIconUrl = footerIconUrl;
+        this.footer = other.footer;
+        this.footerIconUrl = other.footerIconUrl;
     }
 
     /**
@@ -194,8 +190,7 @@ public class ConfigEmbedBuilder {
      * @return the {@link ConfigEmbedBuilder} with the variable
      */
     public ConfigEmbedBuilder variable(final String placeholder, final String value) {
-        final ConfigEmbedBuilder clone = new ConfigEmbedBuilder(fullPath, variables, color, title, titleUrl, author,
-                authorUrl, authorIconUrl, imageUrl, thumbnailUrl, description, fields, footer, footerIconUrl);
+        final ConfigEmbedBuilder clone = new ConfigEmbedBuilder(this);
         clone.variables.add(new Variable(placeholder, value));
         return clone;
     }
