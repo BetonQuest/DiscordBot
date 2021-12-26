@@ -130,6 +130,7 @@ public class BetonBotConfig {
         final DumperOptions options = new DumperOptions();
         options.setIndent(4);
         options.setIndicatorIndent(2);
+        options.setWidth(120);
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
         return new Yaml(options);
     }
