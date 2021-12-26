@@ -3,7 +3,6 @@ package org.betonquest.discordbot.config;
 import com.google.common.collect.Lists;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +45,10 @@ public class BetonBotConfig {
      */
     public final String welcomeEmoji;
     /**
+     * The role id that is added and removed to support threads.
+     */
+    public final Long supportSubscriptionRoleID;
+    /**
      * The role, that can manage support threads.
      */
     public final List<Long> supportRoleIDs;
@@ -60,7 +63,11 @@ public class BetonBotConfig {
     /**
      * The message to show, when a thread was marked as closed.
      */
-    public final MessageEmbed supportClosedEmbed;
+    public final ConfigEmbedBuilder supportClosedEmbed;
+    /**
+     * The message to show, when a new thread was created.
+     */
+    public final ConfigEmbedBuilder supportNewEmbed;
     /**
      * The closed supportChannelIDs.
      */
@@ -82,10 +89,12 @@ public class BetonBotConfig {
         guildID = getOrCreate("GuildID", -1L, config);
         updateCommands = getOrCreate("UpdateCommands", true, config);
         welcomeEmoji = checkEmpty(getOrCreate("WelcomeEmoji", "U+1F44B", config));
+        supportSubscriptionRoleID = getOrCreate("Support.SubscriptionRoleID", -1L, config);
         supportRoleIDs = getOrCreate("Support.RoleIDs", Lists.newArrayList(-1L), config);
         supportChannelIDs = getOrCreate("Support.ChannelIDs", Lists.newArrayList(-1L), config);
         supportClosedEmoji = checkEmpty(getOrCreate("Support.ClosedEmoji", "U+2705", config));
         supportClosedEmbed = getOrCreateEmbed("Support.ClosedMessage", config);
+        supportNewEmbed = getOrCreateEmbed("Support.NewMessage", config);
 
         if (updateCommands) {
             config.put("UpdateCommands", false);
@@ -167,10 +176,10 @@ public class BetonBotConfig {
         return getOrCreate(restKey, defaultValue, subConfig);
     }
 
-    private MessageEmbed getOrCreateEmbed(final String key, final Map<String, Object> config) {
+    private ConfigEmbedBuilder getOrCreateEmbed(final String key, final Map<String, Object> config) {
         return new ConfigEmbedBuilder(
                 getOrCreate(key, ConfigEmbedBuilder.getDefaultConfigEmbed(), config)
-                , key).getEmbed();
+                , key);
     }
 
     private String checkEmpty(final String string) {
