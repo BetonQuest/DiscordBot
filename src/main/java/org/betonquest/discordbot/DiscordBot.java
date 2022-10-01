@@ -5,8 +5,8 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.betonquest.discordbot.config.BetonBotConfig;
-import org.betonquest.discordbot.modules.support.CloseCommand;
 import org.betonquest.discordbot.modules.support.NewThreadListener;
+import org.betonquest.discordbot.modules.support.SolveCommand;
 import org.betonquest.discordbot.modules.welcome.WelcomeMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +63,7 @@ public final class DiscordBot {
         config.getGuild().loadMembers().get();
 
         new WelcomeMessageListener(api, config);
-        new CloseCommand(api, config);
+        new SolveCommand(api, config);
         new NewThreadListener(api, config);
     }
 }

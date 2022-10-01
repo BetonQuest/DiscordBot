@@ -46,9 +46,9 @@ public class BetonBotConfig {
      */
     public final List<Long> supportChannelIDs;
     /**
-     * The message to show, when a thread was marked as closed.
+     * The message to show, when a thread was marked as solved.
      */
-    public final ConfigEmbedBuilder supportClosedEmbed;
+    public final ConfigEmbedBuilder supportSolvedEmbed;
     /**
      * The message to show, when a new thread was created.
      */
@@ -71,7 +71,7 @@ public class BetonBotConfig {
         updateCommands = getOrCreate("UpdateCommands", true, config);
         welcomeEmoji = checkEmpty(String.valueOf(getOrCreate("WelcomeEmoji", "U+1F44B", config)));
         supportChannelIDs = getOrCreate("Support.ChannelIDs", Lists.newArrayList(-1L), config);
-        supportClosedEmbed = getOrCreateEmbed("Support.ClosedMessage", config);
+        supportSolvedEmbed = getOrCreateEmbed("Support.SolvedMessage", config);
         supportNewEmbed = getOrCreateEmbed("Support.NewMessage", config);
 
         if (updateCommands) {

@@ -13,9 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A `close` command to close support threads in a parent channel.
+ * A `solve` command to close support threads in a parent channel.
  */
-public class CloseCommand extends ListenerAdapter {
+public class SolveCommand extends ListenerAdapter {
     /**
      * The command name.
      */
@@ -23,33 +23,33 @@ public class CloseCommand extends ListenerAdapter {
     /**
      * Logger instance.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(CloseCommand.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SolveCommand.class);
     /**
      * The {@link BetonBotConfig} instance.
      */
     private final BetonBotConfig config;
 
     /**
-     * Create a new `close` command instance.
+     * Create a new `solve` command instance.
      *
      * @param api    The {@link JDA} instance
      * @param config The {@link BetonBotConfig} instance
      */
-    public CloseCommand(final JDA api, final BetonBotConfig config) {
+    public SolveCommand(final JDA api, final BetonBotConfig config) {
         super();
         this.config = config;
         if (config.supportChannelIDs.isEmpty()) {
             LOGGER.warn("No support channels where found or set!");
             return;
         }
-        if (config.supportClosedEmbed == null) {
+        if (config.supportSolvedEmbed == null) {
             LOGGER.warn("No support closed message was found or set!");
             return;
         }
 
         if (config.updateCommands) {
             api.updateCommands().addCommands(
-                    Commands.slash(COMMAND, "Close a support thread")
+                    Commands.slash(COMMAND, "Mark a support thread as solved.")
                             .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
             ).queue();
         }
@@ -72,10 +72,10 @@ public class CloseCommand extends ListenerAdapter {
 
     private void close(final SlashCommandInteractionEvent event) {
         final ThreadChannel channel = (ThreadChannel) event.getChannel();
-        if (config.supportClosedEmbed == null) {
+        if (config.supportSolvedEmbed == null) {
             event.reply( "Post solved.").setEphemeral(true).queue();
         } else {
-            event.replyEmbeds(config.supportClosedEmbed.getEmbed()).queue();
+            event.replyEmbeds(config.supportSolvedEmbed.getEmbed()).queue();
         }
         channel.getManager().setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.TIME_1_HOUR).queue();
     }
