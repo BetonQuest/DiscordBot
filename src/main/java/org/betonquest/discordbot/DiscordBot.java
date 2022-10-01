@@ -11,7 +11,6 @@ import org.betonquest.discordbot.modules.welcome.WelcomeMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.nio.file.Paths;
 
@@ -51,9 +50,6 @@ public final class DiscordBot {
 
         } catch (final IOException e) {
             LOGGER.error("Could not read the config file 'config.yml'! Reason: ", e);
-            return;
-        } catch (final LoginException e) {
-            LOGGER.error("Could not connect to Discord server! Reason: ", e);
             return;
         }
 

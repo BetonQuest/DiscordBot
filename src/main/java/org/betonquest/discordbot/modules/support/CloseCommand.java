@@ -1,18 +1,16 @@
 package org.betonquest.discordbot.modules.support;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.Emoji;
-import net.dv8tion.jda.api.entities.ThreadChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.betonquest.discordbot.config.BetonBotConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * A `close` command to close support threads in a parent channel.
@@ -21,7 +19,7 @@ public class CloseCommand extends ListenerAdapter {
     /**
      * The command name.
      */
-    public static final String COMMAND = "close";
+    public static final String COMMAND = "solve";
     /**
      * Logger instance.
      */
@@ -30,11 +28,6 @@ public class CloseCommand extends ListenerAdapter {
      * The {@link BetonBotConfig} instance.
      */
     private final BetonBotConfig config;
-    /**
-     * The {@link Emoji} if a support channel is closed.
-     */
-    @SuppressWarnings("PMD.ImmutableField")
-    private Emoji supportClosedEmoji;
 
     /**
      * Create a new `close` command instance.
@@ -53,23 +46,18 @@ public class CloseCommand extends ListenerAdapter {
             LOGGER.warn("No support closed message was found or set!");
             return;
         }
-        if (config.supportClosedEmoji == null) {
-            LOGGER.warn("No support closed emoji was found or set!");
-            return;
-        }
-        supportClosedEmoji = Emoji.fromUnicode(config.supportClosedEmoji);
 
         if (config.updateCommands) {
-            api.upsertCommand(COMMAND, "Close a support thread").setDefaultEnabled(false).queue((createdCommand) -> {
-                final Set<CommandPrivilege> collect = config.supportRoleIDs.stream().map(CommandPrivilege::enableRole).collect(Collectors.toSet());
-                createdCommand.updatePrivileges(config.getGuild(), collect).queue();
-            });
+            api.updateCommands().addCommands(
+                    Commands.slash(COMMAND, "Close a support thread")
+                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
+            ).queue();
         }
         api.addEventListener(this);
     }
 
     @Override
-    public void onSlashCommand(final SlashCommandEvent event) {
+    public void onSlashCommandInteraction(final SlashCommandInteractionEvent event) {
         if (!COMMAND.equals(event.getName())) {
             return;
         }
@@ -82,19 +70,13 @@ public class CloseCommand extends ListenerAdapter {
         close(event);
     }
 
-    private void close(final SlashCommandEvent event) {
+    private void close(final SlashCommandInteractionEvent event) {
         final ThreadChannel channel = (ThreadChannel) event.getChannel();
-        if (supportClosedEmoji != null && channel.getName().startsWith(supportClosedEmoji.getAsMention())) {
-            event.reply("This thread is already closed!").setEphemeral(true).queue();
-            return;
-        }
-        final String emoji = supportClosedEmoji == null ? "" : supportClosedEmoji.getAsMention();
         if (config.supportClosedEmbed == null) {
-            event.reply(emoji + "Thread closed").setEphemeral(true).queue();
+            event.reply( "Post solved.").setEphemeral(true).queue();
         } else {
             event.replyEmbeds(config.supportClosedEmbed.getEmbed()).queue();
         }
         channel.getManager().setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.TIME_1_HOUR).queue();
-        channel.getManager().setName(emoji + channel.getName()).queue();
     }
 }

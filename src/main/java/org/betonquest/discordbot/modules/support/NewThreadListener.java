@@ -1,11 +1,10 @@
 package org.betonquest.discordbot.modules.support;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.betonquest.discordbot.config.BetonBotConfig;
@@ -53,37 +52,34 @@ public class NewThreadListener extends ListenerAdapter {
             return;
         }
         final ThreadChannel channel = (ThreadChannel) event.getChannel();
-        final Role role = config.getGuild().getRoleById(config.supportSubscriptionRoleID);
-        final String roleMention = role == null ? "<role not found>" : role.getAsMention();
 
-        sendMessageRetry(0, channel, roleMention);
+        sendMessageRetry(0, channel);
     }
 
-    private void sendMessageRetry(final int retry, final ThreadChannel channel, final String roleMention) {
+    private void sendMessageRetry(final int retry, final ThreadChannel channel) {
         channel.getHistoryFromBeginning(1).queue(history -> {
             if (history.isEmpty()) {
                 if (retry < RETRIES) {
                     try {
                         Thread.sleep(500);
-                        sendMessageRetry(retry + 1, channel, roleMention);
+                        sendMessageRetry(retry + 1, channel);
                         return;
                     } catch (final InterruptedException e) {
                         LOGGER.warn(e.getMessage(), e);
                     }
                 }
-                sendMessage(channel, "", roleMention);
+                sendMessage(channel, "");
                 return;
             }
 
             final Message firstMessage = history.getRetrievedHistory().get(0);
             final Member member = firstMessage.getReferencedMessage() == null ? firstMessage.getMember() : firstMessage.getReferencedMessage().getMember();
-            sendMessage(channel, member == null ? "" : member.getAsMention(), roleMention);
-        }, fail -> sendMessage(channel, "", roleMention));
+            sendMessage(channel, member == null ? "" : member.getAsMention());
+        }, fail -> sendMessage(channel, ""));
     }
 
-    private void sendMessage(final ThreadChannel channel, final String memberMention, final String roleMention) {
+    private void sendMessage(final ThreadChannel channel, final String memberMention) {
         channel.sendMessage("Hey " + memberMention).queue();
         channel.sendMessageEmbeds(config.supportNewEmbed.getEmbed()).queue();
-        channel.sendMessage("Hey " + roleMention + ", someone needs your help!").queue();
     }
 }
