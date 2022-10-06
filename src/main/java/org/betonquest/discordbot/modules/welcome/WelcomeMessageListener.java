@@ -6,7 +6,6 @@ import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.internal.utils.Helpers;
 import org.betonquest.discordbot.config.BetonBotConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,11 +21,7 @@ public class WelcomeMessageListener extends ListenerAdapter {
     /**
      * The emoji to react with.
      */
-    private final String emoji;
-    /**
-     * The global {@link JDA} Instance
-     */
-    private final JDA jda;
+    private final Emoji emoji;
 
     /**
      * Create a new {@link WelcomeMessageListener}
@@ -36,13 +31,11 @@ public class WelcomeMessageListener extends ListenerAdapter {
      */
     public WelcomeMessageListener(final JDA api, final BetonBotConfig config) {
         super();
-        emoji = config.welcomeEmoji;
-        jda = api;
-        if (emoji == null) {
-            LOGGER.warn("No welcome emoji was found or set!");
-            return;
+        this.emoji = getEmoji(config.welcomeEmoji);
+
+        if (emoji != null) {
+            api.addEventListener(this);
         }
-        api.addEventListener(this);
     }
 
     @Override
@@ -52,12 +45,16 @@ public class WelcomeMessageListener extends ListenerAdapter {
         }
         if (event.getMessage().getType().equals(MessageType.GUILD_MEMBER_JOIN)) {
             final Message message = event.getMessage();
-            message.addReaction(getEmoji(jda, this.emoji)).queue();
+            message.addReaction(this.emoji).queue();
         }
     }
 
-    private Emoji getEmoji(final JDA jda, final String emoji) {
-        final Emoji obj = Helpers.isNumeric(emoji) ? jda.getEmojiById(emoji) : Emoji.fromUnicode(emoji);
-        return (obj == null) ? Emoji.fromUnicode("U+1F44B") : obj;
+    private Emoji getEmoji(final String stringEmoji) {
+        try {
+            return Emoji.fromFormatted(stringEmoji);
+        } catch (final IllegalArgumentException e) {
+            LOGGER.warn("No welcome emoji was found or set! Reason: {}", e.getMessage());
+            return null;
+        }
     }
 }
