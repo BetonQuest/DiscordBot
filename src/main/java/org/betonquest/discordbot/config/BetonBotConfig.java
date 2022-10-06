@@ -50,9 +50,17 @@ public class BetonBotConfig {
      */
     public final ConfigEmbedBuilder supportSolvedEmbed;
     /**
-     * The message to show, when a new thread was created.
+     * The Tag-ID to apply to solved Support Posts.
      */
-    public final ConfigEmbedBuilder supportNewEmbed;
+    public final Long supportTagSolved;
+    /**
+     * The Tag-ID to apply to unsolved Support Posts.
+     */
+    public final Long supportTagUnsolved;
+    /**
+     * A List of Tag-IDs to keep when changing a Post from Unsolved to Solved.
+     */
+    public final List<Long> supportTagsToKeep;
     /**
      * The {@link Guild} of the Discord managed by this bot.
      */
@@ -71,8 +79,10 @@ public class BetonBotConfig {
         updateCommands = getOrCreate("UpdateCommands", true, config);
         welcomeEmoji = checkEmpty(String.valueOf(getOrCreate("WelcomeEmoji", "U+1F44B", config)));
         supportChannelIDs = getOrCreate("Support.ChannelIDs", Lists.newArrayList(-1L), config);
+        supportTagSolved = getOrCreate("Support.Tags.Solved", -1L, config);
+        supportTagUnsolved = getOrCreate("Support.Tags.Unsolved", -1L, config);
+        supportTagsToKeep = getOrCreate("Support.Tags.Keep", Lists.newArrayList(-1L), config);
         supportSolvedEmbed = getOrCreateEmbed("Support.SolvedMessage", config);
-        supportNewEmbed = getOrCreateEmbed("Support.NewMessage", config);
 
         if (updateCommands) {
             config.put("UpdateCommands", false);
