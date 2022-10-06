@@ -212,10 +212,12 @@ public class ConfigEmbedBuilder {
             final String fieldName = resolveVariables(field.getLeft());
             final String fieldValueString = resolveVariables(field.getMiddle());
             final boolean fieldInline = Boolean.parseBoolean(resolveVariables(field.getRight()));
-            if (fieldName == null || fieldValueString == null) {
+            if (fieldName == null && fieldValueString == null) {
                 embed.addBlankField(fieldInline);
-            } else {
+            } else if (fieldName != null && fieldValueString != null) {
                 embed.addField(fieldName, fieldValueString, fieldInline);
+            } else {
+                LOGGER.warn("Your embed might be misconfigured at path '" + fullPath + "'.");
             }
         }
         embed.setFooter(resolveVariables(footer), resolveVariables(footerIconUrl));
