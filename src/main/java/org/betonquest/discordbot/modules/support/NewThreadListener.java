@@ -1,24 +1,24 @@
 package org.betonquest.discordbot.modules.support;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
+import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager;
 import org.betonquest.discordbot.config.BetonBotConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * This listener adds a reaction to discords welcome message.
  */
 public class NewThreadListener extends ListenerAdapter {
-    /**
-     * The amount of retries to get the history.
-     */
-    public static final int RETRIES = 10;
     /**
      * Logger instance.
      */
@@ -52,34 +52,18 @@ public class NewThreadListener extends ListenerAdapter {
             return;
         }
         final ThreadChannel channel = (ThreadChannel) event.getChannel();
+        final ThreadChannelManager channelManager = channel.getManager();
 
-        sendMessageRetry(0, channel);
-    }
+        final Stream<ForumTagSnowflake> appliedTagSnowflakes = channel.getAppliedTags()
+                .stream()
+                .map(ForumTag::getIdLong)
+                .filter(tagId -> !tagId.equals(config.supportTagSolved))
+                .map(ForumTagSnowflake::fromId);
+        final List<ForumTagSnowflake> resultTagSnowflakes = Stream.concat(
+                        Stream.of(ForumTagSnowflake.fromId(config.supportTagUnsolved)),
+                        appliedTagSnowflakes)
+                .toList();
 
-    private void sendMessageRetry(final int retry, final ThreadChannel channel) {
-        channel.getHistoryFromBeginning(1).queue(history -> {
-            if (history.isEmpty()) {
-                if (retry < RETRIES) {
-                    try {
-                        Thread.sleep(500);
-                        sendMessageRetry(retry + 1, channel);
-                        return;
-                    } catch (final InterruptedException e) {
-                        LOGGER.warn(e.getMessage(), e);
-                    }
-                }
-                sendMessage(channel, "");
-                return;
-            }
-
-            final Message firstMessage = history.getRetrievedHistory().get(0);
-            final Member member = firstMessage.getReferencedMessage() == null ? firstMessage.getMember() : firstMessage.getReferencedMessage().getMember();
-            sendMessage(channel, member == null ? "" : member.getAsMention());
-        }, fail -> sendMessage(channel, ""));
-    }
-
-    private void sendMessage(final ThreadChannel channel, final String memberMention) {
-        channel.sendMessage("Hey " + memberMention).queue();
-        channel.sendMessageEmbeds(config.supportNewEmbed.getEmbed()).queue();
+        channelManager.setAppliedTags(resultTagSnowflakes.toArray(new ForumTagSnowflake[0])).queue();
     }
 }
