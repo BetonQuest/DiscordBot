@@ -12,7 +12,6 @@ import org.betonquest.discordbot.config.BetonBotConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -54,16 +53,18 @@ public class NewThreadListener extends ListenerAdapter {
         final ThreadChannel channel = (ThreadChannel) event.getChannel();
         final ThreadChannelManager channelManager = channel.getManager();
 
-        final Stream<ForumTagSnowflake> appliedTagSnowflakes = channel.getAppliedTags()
+        final Stream<ForumTagSnowflake> appliedTagsToKeep = channel.getAppliedTags()
                 .stream()
                 .map(ForumTag::getIdLong)
                 .filter(tagId -> !tagId.equals(config.supportTagSolved))
                 .map(ForumTagSnowflake::fromId);
-        final List<ForumTagSnowflake> resultTagSnowflakes = Stream.concat(
-                        Stream.of(ForumTagSnowflake.fromId(config.supportTagUnsolved)),
-                        appliedTagSnowflakes)
-                .toList();
 
-        channelManager.setAppliedTags(resultTagSnowflakes.toArray(new ForumTagSnowflake[0])).queue();
+        final ForumTagSnowflake[] finalTags = Stream.concat(
+                        Stream.of(ForumTagSnowflake.fromId(config.supportTagUnsolved)),
+                        appliedTagsToKeep)
+                .toList()
+                .toArray(new ForumTagSnowflake[0]);
+
+        channelManager.setAppliedTags(finalTags).queue();
     }
 }
