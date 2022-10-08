@@ -3,7 +3,6 @@ package org.betonquest.discordbot.config;
 import com.google.common.collect.Lists;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.DumperOptions;
@@ -12,8 +11,6 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,33 +42,29 @@ public class BetonBotConfig {
      */
     public final String welcomeEmoji;
     /**
-     * The role id that is added and removed to support threads.
-     */
-    public final Long supportSubscriptionRoleID;
-    /**
-     * The role, that can manage support threads.
-     */
-    public final List<Long> supportRoleIDs;
-    /**
      * The ids of the support channels.
      */
     public final List<Long> supportChannelIDs;
     /**
-     * The Emoji to mark closed threads with.
+     * The message to show, when a thread was marked as solved.
      */
-    public final String supportClosedEmoji;
+    public final ConfigEmbedBuilder supportSolvedEmbed;
     /**
-     * The message to show, when a thread was marked as closed.
+     * The Tag-ID to apply to solved Support Posts.
      */
-    public final ConfigEmbedBuilder supportClosedEmbed;
+    public final Long supportTagSolved;
     /**
-     * The message to show, when a new thread was created.
+     * The Tag-ID to apply to unsolved Support Posts.
      */
-    public final ConfigEmbedBuilder supportNewEmbed;
+    public final Long supportTagUnsolved;
     /**
-     * The closed supportChannelIDs.
+     * An Order by which ForumTags are sorted when applied to Support Posts.
      */
-    private final List<TextChannel> supportChannels;
+    public final List<Long> supportTagOrder;
+    /**
+     * A List of Tag-IDs to keep when changing a Post from Unsolved to Solved.
+     */
+    public final List<Long> supportTagsToKeep;
     /**
      * The {@link Guild} of the Discord managed by this bot.
      */
@@ -88,18 +81,17 @@ public class BetonBotConfig {
         token = checkEmpty(getOrCreate("Token", "", config));
         guildID = getOrCreate("GuildID", -1L, config);
         updateCommands = getOrCreate("UpdateCommands", true, config);
-        welcomeEmoji = checkEmpty(getOrCreate("WelcomeEmoji", "U+1F44B", config));
-        supportSubscriptionRoleID = getOrCreate("Support.SubscriptionRoleID", -1L, config);
-        supportRoleIDs = getOrCreate("Support.RoleIDs", Lists.newArrayList(-1L), config);
+        welcomeEmoji = checkEmpty(String.valueOf(getOrCreate("WelcomeEmoji", "U+1F44B", config)));
         supportChannelIDs = getOrCreate("Support.ChannelIDs", Lists.newArrayList(-1L), config);
-        supportClosedEmoji = checkEmpty(getOrCreate("Support.ClosedEmoji", "U+2705", config));
-        supportClosedEmbed = getOrCreateEmbed("Support.ClosedMessage", config);
-        supportNewEmbed = getOrCreateEmbed("Support.NewMessage", config);
+        supportTagSolved = getOrCreate("Support.Tags.Solved", -1L, config);
+        supportTagUnsolved = getOrCreate("Support.Tags.Unsolved", -1L, config);
+        supportTagsToKeep = getOrCreate("Support.Tags.Keep", Lists.newArrayList(-1L), config);
+        supportTagOrder = getOrCreate("Support.Tags.Order", Lists.newArrayList(-1L), config);
+        supportSolvedEmbed = getOrCreateEmbed("Support.SolvedMessage", config);
 
         if (updateCommands) {
             config.put("UpdateCommands", false);
         }
-        supportChannels = new ArrayList<>();
         yaml.dump(config, Files.newBufferedWriter(configPath));
     }
 
@@ -112,17 +104,6 @@ public class BetonBotConfig {
         guild = api.getGuildById(guildID);
         if (guild == null) {
             LOGGER.warn("No guild with the id '" + guildID + "' was found!");
-            return;
-        }
-
-        for (final Long supportChannelID : supportChannelIDs) {
-            final TextChannel textChannel = guild.getTextChannelById(supportChannelID);
-            if (textChannel == null) {
-                LOGGER.warn("No text support channel with the id '" + supportChannelIDs + "' was found!");
-            } else {
-                supportChannels.add(textChannel);
-                LOGGER.info("Added support channel :" + textChannel.getName());
-            }
         }
     }
 
@@ -185,16 +166,6 @@ public class BetonBotConfig {
 
     private String checkEmpty(final String string) {
         return string == null ? null : string.isEmpty() ? null : string;
-    }
-
-
-    /**
-     * Get the list of all support channels.
-     *
-     * @return list of channels
-     */
-    public List<TextChannel> getSupportChannels() {
-        return new ArrayList<>(Collections.unmodifiableList(supportChannels));
     }
 
     /**
