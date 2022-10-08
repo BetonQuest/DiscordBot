@@ -4,18 +4,15 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
-import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
-import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager;
 import org.betonquest.discordbot.config.BetonBotConfig;
+import org.betonquest.discordbot.modules.ForumTagHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.stream.Stream;
 
 /**
  * A `solve` command to close support threads in a parent channel.
@@ -49,7 +46,6 @@ public class SolveCommand extends ListenerAdapter {
         }
         if (config.supportSolvedEmbed == null) {
             LOGGER.warn("No support closed message was found or set!");
-            return;
         }
 
         if (config.updateCommands) {
@@ -83,21 +79,14 @@ public class SolveCommand extends ListenerAdapter {
         } else {
             event.replyEmbeds(config.supportSolvedEmbed.getEmbed()).queue();
         }
+
+        new ForumTagHolder(channel)
+                .remove(config.supportTagUnsolved)
+                .keepTags(config.supportTagsToKeep)
+                .add(config.supportTagSolved)
+                .apply(config.supportTagOrder);
+
         final ThreadChannelManager channelManager = channel.getManager();
-
-        final Stream<ForumTagSnowflake> tagsToKeep = channel.getAppliedTags()
-                .stream()
-                .map(ForumTag::getIdLong)
-                .filter(config.supportTagsToKeep::contains)
-                .map(ForumTagSnowflake::fromId);
-
-        final ForumTagSnowflake[] finalTags = Stream.concat(
-                        Stream.of(ForumTagSnowflake.fromId(config.supportTagSolved)),
-                        tagsToKeep)
-                .toList()
-                .toArray(new ForumTagSnowflake[0]);
-
-        channelManager.setAppliedTags(finalTags).queue();
         channelManager.setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.TIME_1_HOUR).queue();
     }
 }

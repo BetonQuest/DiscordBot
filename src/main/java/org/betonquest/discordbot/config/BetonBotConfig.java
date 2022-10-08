@@ -58,6 +58,10 @@ public class BetonBotConfig {
      */
     public final Long supportTagUnsolved;
     /**
+     * An Order by which ForumTags are sorted when applied to Support Posts.
+     */
+    public final List<Long> supportTagOrder;
+    /**
      * A List of Tag-IDs to keep when changing a Post from Unsolved to Solved.
      */
     public final List<Long> supportTagsToKeep;
@@ -82,6 +86,7 @@ public class BetonBotConfig {
         supportTagSolved = getOrCreate("Support.Tags.Solved", -1L, config);
         supportTagUnsolved = getOrCreate("Support.Tags.Unsolved", -1L, config);
         supportTagsToKeep = getOrCreate("Support.Tags.Keep", Lists.newArrayList(-1L), config);
+        supportTagOrder = getOrCreate("Support.Tags.Order", Lists.newArrayList(-1L), config);
         supportSolvedEmbed = getOrCreateEmbed("Support.SolvedMessage", config);
 
         if (updateCommands) {

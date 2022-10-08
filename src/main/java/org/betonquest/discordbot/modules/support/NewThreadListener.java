@@ -3,16 +3,12 @@ package org.betonquest.discordbot.modules.support;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
-import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
-import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager;
 import org.betonquest.discordbot.config.BetonBotConfig;
+import org.betonquest.discordbot.modules.ForumTagHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.stream.Stream;
 
 /**
  * This listener adds a reaction to discords welcome message.
@@ -51,20 +47,10 @@ public class NewThreadListener extends ListenerAdapter {
             return;
         }
         final ThreadChannel channel = (ThreadChannel) event.getChannel();
-        final ThreadChannelManager channelManager = channel.getManager();
 
-        final Stream<ForumTagSnowflake> appliedTagsToKeep = channel.getAppliedTags()
-                .stream()
-                .map(ForumTag::getIdLong)
-                .filter(tagId -> !tagId.equals(config.supportTagSolved))
-                .map(ForumTagSnowflake::fromId);
-
-        final ForumTagSnowflake[] finalTags = Stream.concat(
-                        Stream.of(ForumTagSnowflake.fromId(config.supportTagUnsolved)),
-                        appliedTagsToKeep)
-                .toList()
-                .toArray(new ForumTagSnowflake[0]);
-
-        channelManager.setAppliedTags(finalTags).queue();
+        new ForumTagHolder(channel)
+                .add(config.supportTagUnsolved)
+                .remove(config.supportTagSolved)
+                .apply(config.supportTagOrder);
     }
 }
