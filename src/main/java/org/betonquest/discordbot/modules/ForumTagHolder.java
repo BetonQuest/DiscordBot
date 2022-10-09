@@ -15,6 +15,10 @@ import java.util.stream.Collectors;
  */
 public class ForumTagHolder {
     /**
+     * The maximum allowed number of tags on a forum post.
+     */
+    private static final int MAX_TAGS_PER_POST = 5;
+    /**
      * The {@link ThreadChannel} to manage tags for
      */
     private final ThreadChannel channel;
@@ -100,7 +104,7 @@ public class ForumTagHolder {
                 .map(ForumTagSnowflake::fromId)
                 .toList();
 
-        if (tagList.size() > 5) {
+        if (tagList.size() > MAX_TAGS_PER_POST) {
             tagList = tagList.subList(0, 5);
         }
 
