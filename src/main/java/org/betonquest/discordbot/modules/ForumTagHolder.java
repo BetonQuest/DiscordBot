@@ -73,7 +73,7 @@ public class ForumTagHolder {
     }
 
     /**
-     * Applies the tags to the {@link ThreadChannel}.
+     * Applies the first five tags to the {@link ThreadChannel}.
      * Sorts the tags by a given order. Unspecified tags will be attached at the end of the list.
      * To disable sorting pass an empty {@link List}.
      * <p>
@@ -96,11 +96,14 @@ public class ForumTagHolder {
             }
         }
 
-        final ForumTagSnowflake[] tagSnowflakes = tagIdsToApply.stream()
+        List<ForumTagSnowflake> tagList = tagIdsToApply.stream()
                 .map(ForumTagSnowflake::fromId)
-                .toList()
-                .toArray(new ForumTagSnowflake[0]);
+                .toList();
 
-        channel.getManager().setAppliedTags(tagSnowflakes).queue();
+        if (tagList.size() > 5) {
+            tagList = tagList.subList(0, 5);
+        }
+
+        channel.getManager().setAppliedTags(tagList.toArray(new ForumTagSnowflake[0])).queue();
     }
 }
