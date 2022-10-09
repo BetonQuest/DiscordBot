@@ -8,7 +8,6 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager;
 import org.betonquest.discordbot.config.BetonBotConfig;
 import org.betonquest.discordbot.modules.ForumTagHolder;
 import org.slf4j.Logger;
@@ -85,8 +84,5 @@ public class SolveCommand extends ListenerAdapter {
                 .keepTags(config.supportTagsToKeep)
                 .add(config.supportTagSolved)
                 .apply(config.supportTagOrder);
-
-        final ThreadChannelManager channelManager = channel.getManager();
-        channelManager.setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.TIME_1_HOUR).queue();
     }
 }
