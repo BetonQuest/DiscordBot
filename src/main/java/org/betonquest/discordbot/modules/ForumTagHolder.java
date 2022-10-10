@@ -110,10 +110,10 @@ public class ForumTagHolder {
     }
 
     /**
-     * Calculates the maximum size for the given
+     * Returns the given Array shortened to maximum size allowed if too large.
      *
      * @param tagSnowflakes an Array of {@link ForumTagSnowflake}s
-     * @return the max size to the array
+     * @return the shortened array
      */
     private ForumTagSnowflake[] getMaxTags(final ForumTagSnowflake... tagSnowflakes) {
         final int bound = Math.min(tagSnowflakes.length, MAX_TAGS_PER_POST);
