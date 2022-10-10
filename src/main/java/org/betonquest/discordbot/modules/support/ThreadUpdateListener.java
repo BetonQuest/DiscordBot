@@ -37,8 +37,11 @@ public class ThreadUpdateListener extends ListenerAdapter {
 
     @Override
     public void onChannelUpdateAppliedTags(@NotNull final ChannelUpdateAppliedTagsEvent event) {
-        final ThreadChannel channel = event.getChannel().asThreadChannel();
+        if (!(event.getChannel() instanceof ThreadChannel) || !config.supportChannelIDs.contains(event.getChannel().getIdLong())) {
+            return;
+        }
 
+        final ThreadChannel channel = event.getChannel().asThreadChannel();
         final ForumTagHolder tagHolder = new ForumTagHolder(channel);
 
         if (isSolved(event.getAddedTags())) {

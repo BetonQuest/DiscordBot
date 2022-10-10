@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -100,14 +101,22 @@ public class ForumTagHolder {
             }
         }
 
-        List<ForumTagSnowflake> tagList = tagIdsToApply.stream()
+        final ForumTagSnowflake[] tagSnowflakes = tagIdsToApply.stream()
                 .map(ForumTagSnowflake::fromId)
-                .toList();
+                .toList()
+                .toArray(new ForumTagSnowflake[0]);
 
-        if (tagList.size() > MAX_TAGS_PER_POST) {
-            tagList = tagList.subList(0, 5);
-        }
+        channel.getManager().setAppliedTags(getMaxTags(tagSnowflakes)).queue();
+    }
 
-        channel.getManager().setAppliedTags(tagList.toArray(new ForumTagSnowflake[0])).queue();
+    /**
+     * Calculates the maximum size for the given
+     *
+     * @param tagSnowflakes an Array of {@link ForumTagSnowflake}s
+     * @return the max size to the array
+     */
+    private ForumTagSnowflake[] getMaxTags(final ForumTagSnowflake... tagSnowflakes) {
+        final int bound = Math.min(tagSnowflakes.length, MAX_TAGS_PER_POST);
+        return Arrays.copyOfRange(tagSnowflakes, 0, bound);
     }
 }
