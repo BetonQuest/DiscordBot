@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.betonquest.discordbot.config.BetonBotConfig;
 import org.betonquest.discordbot.modules.support.NewThreadListener;
 import org.betonquest.discordbot.modules.support.SolveCommand;
+import org.betonquest.discordbot.modules.support.ThreadUpdateListener;
 import org.betonquest.discordbot.modules.welcome.WelcomeMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,5 +66,6 @@ public final class DiscordBot {
         new WelcomeMessageListener(api, config);
         new SolveCommand(api, config);
         new NewThreadListener(api, config);
+        new ThreadUpdateListener(api, config);
     }
 }

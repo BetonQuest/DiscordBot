@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,6 +15,10 @@ import java.util.stream.Collectors;
  * It is then possible to add and remove tags, before they are applied to the channel again.
  */
 public class ForumTagHolder {
+    /**
+     * The maximum allowed number of tags on a forum post.
+     */
+    private static final int MAX_TAGS_PER_POST = 5;
     /**
      * The {@link ThreadChannel} to manage tags for
      */
@@ -73,7 +78,7 @@ public class ForumTagHolder {
     }
 
     /**
-     * Applies the tags to the {@link ThreadChannel}.
+     * Applies the first five tags to the {@link ThreadChannel}.
      * Sorts the tags by a given order. Unspecified tags will be attached at the end of the list.
      * To disable sorting pass an empty {@link List}.
      * <p>
@@ -101,6 +106,17 @@ public class ForumTagHolder {
                 .toList()
                 .toArray(new ForumTagSnowflake[0]);
 
-        channel.getManager().setAppliedTags(tagSnowflakes).queue();
+        channel.getManager().setAppliedTags(getMaxTags(tagSnowflakes)).queue();
+    }
+
+    /**
+     * Returns the given Array shortened to maximum size allowed if too large.
+     *
+     * @param tagSnowflakes an Array of {@link ForumTagSnowflake}s
+     * @return the shortened array
+     */
+    private ForumTagSnowflake[] getMaxTags(final ForumTagSnowflake... tagSnowflakes) {
+        final int bound = Math.min(tagSnowflakes.length, MAX_TAGS_PER_POST);
+        return Arrays.copyOfRange(tagSnowflakes, 0, bound);
     }
 }
