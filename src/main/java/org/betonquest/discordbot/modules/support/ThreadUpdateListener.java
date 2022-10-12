@@ -37,29 +37,26 @@ public class ThreadUpdateListener extends ListenerAdapter {
 
     @Override
     public void onChannelUpdateAppliedTags(@NotNull final ChannelUpdateAppliedTagsEvent event) {
-        if (!(event.getChannel() instanceof ThreadChannel) || !config.supportChannelIDs.contains(event.getChannel().getIdLong())) {
+        if (!(event.getChannel() instanceof ThreadChannel) || isNotSupportChannel(event.getChannel().asThreadChannel())) {
             return;
         }
-
         final ThreadChannel channel = event.getChannel().asThreadChannel();
         final ForumTagHolder tagHolder = new ForumTagHolder(channel);
 
         if (isSolved(event.getAddedTags())) {
             tagHolder.remove(config.supportTagUnsolved);
+            channel.getManager().setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.TIME_1_HOUR).queue();
         }
-
         tagHolder.apply(config.supportTagOrder);
-
-        channel.getManager().setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.TIME_1_HOUR).queue();
     }
 
     @Override
     public void onChannelUpdateArchived(@NotNull final ChannelUpdateArchivedEvent event) {
-        if (!(event.getChannel() instanceof ThreadChannel) || !config.supportChannelIDs.contains(event.getChannel().getIdLong())) {
+        if (!(event.getChannel() instanceof ThreadChannel) || isNotSupportChannel(event.getChannel().asThreadChannel())) {
             return;
         }
-
         final ThreadChannel channel = event.getChannel().asThreadChannel();
+
         if (isSolved(channel.getAppliedTags())) {
             channel.getManager().setArchived(true).queue();
         }
@@ -73,5 +70,15 @@ public class ThreadUpdateListener extends ListenerAdapter {
      */
     private boolean isSolved(final List<ForumTag> channelTags) {
         return channelTags.stream().anyMatch(tag -> config.supportTagSolved.equals(tag.getIdLong()));
+    }
+
+    /**
+     * Checks if the given Threads Parent Channel is <b>not</b> a SupportChannel.
+     *
+     * @param channel The Thread to check
+     * @return true if not a support channel, otherwise false.
+     */
+    private boolean isNotSupportChannel(final ThreadChannel channel) {
+        return !config.supportChannelIDs.contains(channel.getParentChannel().getIdLong());
     }
 }
