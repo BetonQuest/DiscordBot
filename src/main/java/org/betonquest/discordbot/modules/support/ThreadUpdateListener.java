@@ -43,9 +43,11 @@ public class ThreadUpdateListener extends ListenerAdapter {
         final ThreadChannel channel = event.getChannel().asThreadChannel();
         final ForumTagHolder tagHolder = new ForumTagHolder(channel);
 
-        if (isSolved(event.getAddedTags())) {
-            tagHolder.remove(config.supportTagUnsolved);
-            channel.getManager().setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.TIME_1_HOUR).queue();
+        if (isSolved(channel.getAppliedTags())) {
+            tagHolder.remove(config.supportTagUnsolved)
+                    .keepTags(config.supportTagsToKeep);
+        } else {
+            tagHolder.add(config.supportTagUnsolved);
         }
         tagHolder.apply(config.supportTagOrder);
     }
@@ -57,8 +59,12 @@ public class ThreadUpdateListener extends ListenerAdapter {
         }
         final ThreadChannel channel = event.getChannel().asThreadChannel();
 
-        if (isSolved(channel.getAppliedTags())) {
-            channel.getManager().setArchived(true).queue();
+        if (channel.isArchived() && !isSolved(channel.getAppliedTags())) {
+            channel.getManager().setArchived(false).queue();
+        } else if (!channel.isArchived()) {
+            new ForumTagHolder(channel)
+                    .remove(config.supportTagSolved)
+                    .apply(config.supportTagOrder);
         }
     }
 
