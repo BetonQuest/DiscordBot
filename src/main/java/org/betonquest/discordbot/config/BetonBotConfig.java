@@ -66,6 +66,14 @@ public class BetonBotConfig {
      */
     public final List<Long> supportTagsToKeep;
     /**
+     * The Interval the Bot checks for Support Posts that should be Closed.
+     */
+    public final int supportAutoCloseCheckInterval;
+    /**
+     * The timeout after which the Bot automatically closes a Support Post.
+     */
+    public final int supportAutoCloseTimeout;
+    /**
      * The {@link Guild} of the Discord managed by this bot.
      */
     private Guild guild;
@@ -88,6 +96,8 @@ public class BetonBotConfig {
         supportTagsToKeep = getOrCreate("Support.Tags.Keep", Lists.newArrayList(-1L), config);
         supportTagOrder = getOrCreate("Support.Tags.Order", Lists.newArrayList(-1L), config);
         supportSolvedEmbed = getOrCreateEmbed("Support.SolvedMessage", config);
+        supportAutoCloseCheckInterval = getOrCreate("Support.AutoCloseCheckInterval", 20, config);
+        supportAutoCloseTimeout = getOrCreate("Support.AutoCloseTimeout", 15, config);
 
         if (updateCommands) {
             config.put("UpdateCommands", false);

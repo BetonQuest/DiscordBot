@@ -80,8 +80,6 @@ public class SolveCommand extends ListenerAdapter {
         }
 
         new ForumTagHolder(channel)
-                .remove(config.supportTagUnsolved)
-                .keepTags(config.supportTagsToKeep)
                 .add(config.supportTagSolved)
                 .apply(config.supportTagOrder);
     }
