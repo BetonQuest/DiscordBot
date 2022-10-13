@@ -2,15 +2,12 @@ package org.betonquest.discordbot.modules.support;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
-import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.events.channel.update.ChannelUpdateAppliedTagsEvent;
 import net.dv8tion.jda.api.events.channel.update.ChannelUpdateArchivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.betonquest.discordbot.config.BetonBotConfig;
 import org.betonquest.discordbot.modules.ForumTagHolder;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 /**
  * This listener sorts and adds tags when Users change them.
@@ -43,7 +40,7 @@ public class ThreadUpdateListener extends ListenerAdapter {
         final ThreadChannel channel = event.getChannel().asThreadChannel();
         final ForumTagHolder tagHolder = new ForumTagHolder(channel);
 
-        if (isSolved(channel.getAppliedTags())) {
+        if (ForumTagHolder.isSolved(channel.getAppliedTags(), config)) {
             tagHolder.remove(config.supportTagUnsolved)
                     .keepTags(config.supportTagsToKeep);
         } else {
@@ -59,23 +56,13 @@ public class ThreadUpdateListener extends ListenerAdapter {
         }
         final ThreadChannel channel = event.getChannel().asThreadChannel();
 
-        if (channel.isArchived() && !isSolved(channel.getAppliedTags())) {
+        if (channel.isArchived() && !ForumTagHolder.isSolved(channel.getAppliedTags(), config)) {
             channel.getManager().setArchived(false).queue();
         } else if (!channel.isArchived()) {
             new ForumTagHolder(channel)
                     .remove(config.supportTagSolved)
                     .apply(config.supportTagOrder);
         }
-    }
-
-    /**
-     * Checks for the "solved" tag from config in the given {@link List} of {@link ForumTag}s.
-     *
-     * @param channelTags the TagList
-     * @return true if the {@link List} contains the "solved" tag, otherwise false
-     */
-    private boolean isSolved(final List<ForumTag> channelTags) {
-        return channelTags.stream().anyMatch(tag -> config.supportTagSolved.equals(tag.getIdLong()));
     }
 
     /**

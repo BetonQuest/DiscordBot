@@ -3,6 +3,7 @@ package org.betonquest.discordbot.modules;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
+import org.betonquest.discordbot.config.BetonBotConfig;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,6 +40,17 @@ public class ForumTagHolder {
                 .stream()
                 .map(ForumTag::getIdLong)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Checks for the "solved" tag from config in the given {@link List} of {@link ForumTag}s.
+     *
+     * @param channelTags the TagList
+     * @param config      the {@link BetonBotConfig} instance
+     * @return true if the {@link List} contains the "solved" tag, otherwise false
+     */
+    public static boolean isSolved(final List<ForumTag> channelTags, final BetonBotConfig config) {
+        return channelTags.stream().anyMatch(tag -> config.supportTagSolved.equals(tag.getIdLong()));
     }
 
     /**

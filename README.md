@@ -11,7 +11,7 @@ We use [JDA (Java Discord API)](https://github.com/DV8FromTheWorld/JDA) as the B
 - Support Forums
   - A "Unsolved" Tag is automatically added
   - Can be solved by either using `/solve` or adding a "Solved" Tag manually
-  - Automatically closes solved Posts after an hour
+  - Automatically closes solved Posts. The Timeout is configurable.
 
 # Configuration
 - The emoji added to join messages.
@@ -24,6 +24,8 @@ We use [JDA (Java Discord API)](https://github.com/DV8FromTheWorld/JDA) as the B
   - which channels are affected
   - `/solve` command
     - a message as an embed, when a post is marked as solved
+  - The Timeout after which a post is automatically closed
+  - The Interval the bot checks for posts to be closed
   - Tags
     - a tag to mark solved posts
     - a tag to mark unsolved posts
