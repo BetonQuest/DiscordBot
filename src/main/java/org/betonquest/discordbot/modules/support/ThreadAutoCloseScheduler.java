@@ -1,9 +1,12 @@
 package org.betonquest.discordbot.modules.support;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.events.session.ShutdownEvent;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.betonquest.discordbot.config.BetonBotConfig;
 import org.betonquest.discordbot.modules.ForumTagHolder;
@@ -54,7 +57,7 @@ public class ThreadAutoCloseScheduler extends ListenerAdapter implements Runnabl
                 .toList();
 
         final int checkInterval = config.supportAutoCloseCheckInterval;
-        executorService.scheduleAtFixedRate(this, checkInterval, checkInterval, TimeUnit.MINUTES);
+        executorService.scheduleAtFixedRate(this, 0, checkInterval, TimeUnit.MINUTES);
         api.addEventListener(this);
     }
 
@@ -82,7 +85,51 @@ public class ThreadAutoCloseScheduler extends ListenerAdapter implements Runnabl
                 .flatMap(Collection::stream)
                 .filter(channel -> !channel.isArchived()
                         && ForumTagHolder.isSolved(channel.getAppliedTags(), config)
-                        && channel.getTimeArchiveInfoLastModified().isBefore(timeout)
+                        && isLastForeignMessageTimedOut(channel, timeout)
                 ).forEach(channel -> channel.getManager().setArchived(true).queue());
+    }
+
+    /**
+     * Gets the last message not send by the bot itself.
+     * Then it checks if the message was sent before the given timeout.
+     *
+     * @param channel the {@link ThreadChannel} to check
+     * @param timeout the timeout
+     * @return true if the last foreign message was sent before the timeout
+     */
+    private boolean isLastForeignMessageTimedOut(final ThreadChannel channel, final OffsetDateTime timeout) {
+        try {
+            final Message lastMessage = channel.retrieveMessageById(channel.getLatestMessageId()).complete();
+            final Message lastForeignMessage = getLastForeignMessage(channel, lastMessage);
+            return Objects.isNull(lastForeignMessage) || lastForeignMessage.getTimeCreated().isBefore(timeout);
+        } catch (final ErrorResponseException e) {
+            return true;
+        }
+    }
+
+    /**
+     * Checks if the given message was sent from the bot itself.
+     * If this is the case the function will recursively call itself until it receives a foreign message.
+     *
+     * @param channel the channel whose messages will be loaded
+     * @param message the last message
+     * @return the last message not sent from the bot itself
+     */
+    private Message getLastForeignMessage(final ThreadChannel channel, final Message message) {
+        if (Objects.isNull(message)) {
+            return null;
+        }
+
+        if (!message.getAuthor().equals(channel.getJDA().getSelfUser())) {
+            return message;
+        }
+
+        final Message messageBefore = channel.getHistoryBefore(message, 1)
+                .complete()
+                .getRetrievedHistory()
+                .stream()
+                .findAny()
+                .orElse(null);
+        return getLastForeignMessage(channel, messageBefore);
     }
 }

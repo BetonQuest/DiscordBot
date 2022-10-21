@@ -46,7 +46,7 @@ public final class DiscordBot {
                 return;
             }
             api = JDABuilder.createDefault(config.token)
-                    .enableIntents(GatewayIntent.GUILD_MEMBERS)
+                    .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
                     .setMemberCachePolicy(MemberCachePolicy.ALL)
                     .build();
 
