@@ -21,10 +21,12 @@ public class SolveCommand extends ListenerAdapter {
      * The command name.
      */
     public static final String COMMAND = "solve";
+
     /**
      * Logger instance.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(SolveCommand.class);
+
     /**
      * The {@link BetonBotConfig} instance.
      */

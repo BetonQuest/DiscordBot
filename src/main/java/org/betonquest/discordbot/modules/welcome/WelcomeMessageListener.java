@@ -18,6 +18,7 @@ public class WelcomeMessageListener extends ListenerAdapter {
      * Logger instance.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(WelcomeMessageListener.class);
+
     /**
      * The emoji to react with.
      */

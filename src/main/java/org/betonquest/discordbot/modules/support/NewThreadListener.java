@@ -18,6 +18,7 @@ public class NewThreadListener extends ListenerAdapter {
      * Logger instance.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(NewThreadListener.class);
+
     /**
      * The {@link BetonBotConfig} instance.
      */
@@ -49,7 +50,6 @@ public class NewThreadListener extends ListenerAdapter {
         final ThreadChannel channel = (ThreadChannel) event.getChannel();
 
         new ForumTagHolder(channel)
-                .add(config.supportTagUnsolved)
                 .remove(config.supportTagSolved)
                 .apply(config.supportTagOrder);
     }

@@ -40,12 +40,6 @@ public class ThreadUpdateListener extends ListenerAdapter {
         final ThreadChannel channel = event.getChannel().asThreadChannel();
         final ForumTagHolder tagHolder = new ForumTagHolder(channel);
 
-        if (ForumTagHolder.isSolved(channel.getAppliedTags(), config)) {
-            tagHolder.remove(config.supportTagUnsolved)
-                    .keepTags(config.supportTagsToKeep);
-        } else {
-            tagHolder.add(config.supportTagUnsolved);
-        }
         tagHolder.apply(config.supportTagOrder);
     }
 

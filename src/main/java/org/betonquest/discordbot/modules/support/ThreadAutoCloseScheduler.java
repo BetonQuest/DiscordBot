@@ -31,10 +31,12 @@ public class ThreadAutoCloseScheduler extends ListenerAdapter implements Runnabl
      * The Scheduler used to periodically run this process.
      */
     private final ScheduledExecutorService executorService;
+
     /**
      * The {@link BetonBotConfig} instance.
      */
     private final BetonBotConfig config;
+
     /**
      * The {@link ForumChannel}s in which Posts should be automatically closed.
      */
