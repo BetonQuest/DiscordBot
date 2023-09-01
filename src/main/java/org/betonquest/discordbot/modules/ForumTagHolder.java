@@ -20,10 +20,12 @@ public class ForumTagHolder {
      * The maximum allowed number of tags on a forum post.
      */
     private static final int MAX_TAGS_PER_POST = 5;
+
     /**
      * The {@link ThreadChannel} to manage tags for
      */
     private final ThreadChannel channel;
+
     /**
      * Tags saved as IDs
      */

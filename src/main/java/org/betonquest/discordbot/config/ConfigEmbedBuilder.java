@@ -28,50 +28,62 @@ public class ConfigEmbedBuilder {
      * All variables that should be parsed.
      */
     private final List<Variable> variables;
+
     /**
      * The embeds' color.
      */
     private final String color;
+
     /**
      * The embeds' title.
      */
     private final String title;
+
     /**
      * The embeds' titleUrl.
      */
     private final String titleUrl;
+
     /**
      * The embeds' author.
      */
     private final String author;
+
     /**
      * The embeds' authorUrl.
      */
     private final String authorUrl;
+
     /**
      * The embeds' authorIconUrl.
      */
     private final String authorIconUrl;
+
     /**
      * The embeds' imageUrl.
      */
     private final String imageUrl;
+
     /**
      * The embeds' thumbnailUrl.
      */
     private final String thumbnailUrl;
+
     /**
      * The embeds' description.
      */
     private final String description;
+
     /**
      * The embeds' fields.
      */
     private final List<Triple<String, String, String>> fields;
+
     /**
      * The embeds' footer.
      */
     private final String footer;
+
     /**
      * The embeds' footerIconUrl.
      */
@@ -263,6 +275,7 @@ public class ConfigEmbedBuilder {
          * The placeholder to replace
          */
         private final String placeholder;
+
         /**
          * The value of the placeholder.
          */

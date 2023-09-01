@@ -29,50 +29,57 @@ public class BetonBotConfig {
      * The token to connect to Discord.
      */
     public final String token;
+
     /**
      * The guild id for the target Discord server.
      */
     public final Long guildID;
+
     /**
      * Should the commands be registered again.
      */
     public final boolean updateCommands;
+
     /**
      * The emoji to react on discords welcome message.
      */
     public final String welcomeEmoji;
+
     /**
      * The ids of the support channels.
      */
     public final List<Long> supportChannelIDs;
+
     /**
      * The message to show, when a thread was marked as solved.
      */
     public final ConfigEmbedBuilder supportSolvedEmbed;
+
     /**
      * The Tag-ID to apply to solved Support Posts.
      */
     public final Long supportTagSolved;
-    /**
-     * The Tag-ID to apply to unsolved Support Posts.
-     */
-    public final Long supportTagUnsolved;
+
     /**
      * An Order by which ForumTags are sorted when applied to Support Posts.
      */
     public final List<Long> supportTagOrder;
+
     /**
      * A List of Tag-IDs to keep when changing a Post from Unsolved to Solved.
      */
     public final List<Long> supportTagsToKeep;
+
     /**
      * The Interval the Bot checks for Support Posts that should be Closed.
      */
     public final int supportAutoCloseCheckInterval;
+
     /**
      * The timeout after which the Bot automatically closes a Support Post.
      */
     public final int supportAutoCloseTimeout;
+
     /**
      * The {@link Guild} of the Discord managed by this bot.
      */
@@ -92,7 +99,6 @@ public class BetonBotConfig {
         welcomeEmoji = checkEmpty(String.valueOf(getOrCreate("WelcomeEmoji", "U+1F44B", config)));
         supportChannelIDs = getOrCreate("Support.ChannelIDs", Lists.newArrayList(-1L), config);
         supportTagSolved = getOrCreate("Support.Tags.Solved", -1L, config);
-        supportTagUnsolved = getOrCreate("Support.Tags.Unsolved", -1L, config);
         supportTagsToKeep = getOrCreate("Support.Tags.Keep", Lists.newArrayList(-1L), config);
         supportTagOrder = getOrCreate("Support.Tags.Order", Lists.newArrayList(-1L), config);
         supportSolvedEmbed = getOrCreateEmbed("Support.SolvedMessage", config);
@@ -170,8 +176,7 @@ public class BetonBotConfig {
 
     private ConfigEmbedBuilder getOrCreateEmbed(final String key, final Map<String, Object> config) {
         return new ConfigEmbedBuilder(
-                getOrCreate(key, ConfigEmbedBuilder.getDefaultConfigEmbed(), config)
-                , key);
+                getOrCreate(key, ConfigEmbedBuilder.getDefaultConfigEmbed(), config), key);
     }
 
     private String checkEmpty(final String string) {
