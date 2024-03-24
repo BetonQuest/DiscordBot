@@ -82,7 +82,7 @@ public class SolveCommand extends ListenerAdapter {
         }
 
         new ForumTagHolder(channel)
-                .add(config.supportTagSolved)
-                .apply(config.supportTagOrder);
+                .add(config.supportTagsSolved)
+                .apply(config.supportTagsOrder);
     }
 }

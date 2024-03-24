@@ -50,7 +50,8 @@ public class NewThreadListener extends ListenerAdapter {
         final ThreadChannel channel = (ThreadChannel) event.getChannel();
 
         new ForumTagHolder(channel)
-                .remove(config.supportTagSolved)
-                .apply(config.supportTagOrder);
+                .remove(config.supportTagsSolved)
+                .add(config.supportTagsDefault)
+                .apply(config.supportTagsOrder);
     }
 }

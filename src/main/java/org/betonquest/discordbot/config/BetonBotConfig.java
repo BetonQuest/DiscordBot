@@ -58,12 +58,17 @@ public class BetonBotConfig {
     /**
      * The Tag-ID to apply to solved Support Posts.
      */
-    public final Long supportTagSolved;
+    public final Long supportTagsSolved;
+
+    /**
+     * The Tag-ID to apply to Support Posts by default if no tag is set.
+     */
+    public final Long supportTagsDefault;
 
     /**
      * An Order by which ForumTags are sorted when applied to Support Posts.
      */
-    public final List<Long> supportTagOrder;
+    public final List<Long> supportTagsOrder;
 
     /**
      * A List of Tag-IDs to keep when changing a Post from Unsolved to Solved.
@@ -98,9 +103,10 @@ public class BetonBotConfig {
         updateCommands = getOrCreate("UpdateCommands", true, config);
         welcomeEmoji = checkEmpty(String.valueOf(getOrCreate("WelcomeEmoji", "U+1F44B", config)));
         supportChannelIDs = getOrCreate("Support.ChannelIDs", Lists.newArrayList(-1L), config);
-        supportTagSolved = getOrCreate("Support.Tags.Solved", -1L, config);
+        supportTagsSolved = getOrCreate("Support.Tags.Solved", -1L, config);
+        supportTagsDefault = getOrCreate("Support.Tags.Default", -1L, config);
         supportTagsToKeep = getOrCreate("Support.Tags.Keep", Lists.newArrayList(-1L), config);
-        supportTagOrder = getOrCreate("Support.Tags.Order", Lists.newArrayList(-1L), config);
+        supportTagsOrder = getOrCreate("Support.Tags.Order", Lists.newArrayList(-1L), config);
         supportSolvedEmbed = getOrCreateEmbed("Support.SolvedMessage", config);
         supportAutoCloseCheckInterval = getOrCreate("Support.AutoCloseCheckInterval", 20, config);
         supportAutoCloseTimeout = getOrCreate("Support.AutoCloseTimeout", 15, config);
