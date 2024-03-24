@@ -52,7 +52,7 @@ public class ForumTagHolder {
      * @return true if the {@link List} contains the "solved" tag, otherwise false
      */
     public static boolean isSolved(final List<ForumTag> channelTags, final BetonBotConfig config) {
-        return channelTags.stream().anyMatch(tag -> config.supportTagSolved.equals(tag.getIdLong()));
+        return channelTags.stream().anyMatch(tag -> config.supportTagsSolved.equals(tag.getIdLong()));
     }
 
     /**

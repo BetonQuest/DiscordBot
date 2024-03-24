@@ -38,9 +38,12 @@ public class ThreadUpdateListener extends ListenerAdapter {
             return;
         }
         final ThreadChannel channel = event.getChannel().asThreadChannel();
+        if (channel.isArchived()) {
+            return;
+        }
         final ForumTagHolder tagHolder = new ForumTagHolder(channel);
 
-        tagHolder.apply(config.supportTagOrder);
+        tagHolder.apply(config.supportTagsOrder);
     }
 
     @Override
@@ -54,8 +57,8 @@ public class ThreadUpdateListener extends ListenerAdapter {
             channel.getManager().setArchived(false).queue();
         } else if (!channel.isArchived()) {
             new ForumTagHolder(channel)
-                    .remove(config.supportTagSolved)
-                    .apply(config.supportTagOrder);
+                    .remove(config.supportTagsSolved)
+                    .apply(config.supportTagsOrder);
         }
     }
 
