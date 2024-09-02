@@ -3,12 +3,15 @@ package org.betonquest.discordbot.modules.support;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.betonquest.discordbot.config.BetonBotConfig;
 import org.betonquest.discordbot.modules.ForumTagHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * This listener adds a reaction to discords welcome message.
@@ -49,9 +52,14 @@ public class NewThreadListener extends ListenerAdapter {
         }
         final ThreadChannel channel = (ThreadChannel) event.getChannel();
 
-        new ForumTagHolder(channel)
+        final ForumTagHolder forumTagHolder = new ForumTagHolder(channel);
+        final List<ForumTag> appliedTags = channel.getAppliedTags();
+        if (appliedTags.size() == 1 && ForumTagHolder.isSolved(appliedTags, config)) {
+            forumTagHolder
+                    .add(config.supportTagsDefault);
+        }
+        forumTagHolder
                 .remove(config.supportTagsSolved)
-                .add(config.supportTagsDefault)
                 .apply(config.supportTagsOrder);
     }
 }
