@@ -9,7 +9,6 @@ We use [JDA (Java Discord API)](https://github.com/DV8FromTheWorld/JDA) as the B
 # Features
 - The Bot adds a reaction to join messages
 - Support Forums
-  - A "Unsolved" Tag is automatically added
   - Can be solved by either using `/solve` or adding a "Solved" Tag manually
   - Automatically closes solved Posts. The Timeout is configurable.
 
@@ -28,6 +27,5 @@ We use [JDA (Java Discord API)](https://github.com/DV8FromTheWorld/JDA) as the B
   - The Interval the bot checks for posts to be closed
   - Tags
     - a tag to mark solved posts
-    - a tag to mark unsolved posts
     - tags to keep when a post is solved
     - a order by which tags are sorted
