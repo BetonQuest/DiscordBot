@@ -6,19 +6,12 @@ import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.betonquest.discordbot.config.BetonBotConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This listener adds a reaction to discords welcome message.
  */
 public class WelcomeMessageListener extends ListenerAdapter {
-    /**
-     * Logger instance.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(WelcomeMessageListener.class);
-
     /**
      * The emoji to react with.
      */
@@ -28,15 +21,14 @@ public class WelcomeMessageListener extends ListenerAdapter {
      * Create a new {@link WelcomeMessageListener}
      *
      * @param api    the {@link JDA} instance
-     * @param config the {@link BetonBotConfig} instance
+     * @param welcomeEmoji the welcome emoji to send to every new member
+     * @throws IllegalArgumentException if the welcome emoji is null
+     * @throws IllegalStateException if the welcome emoji is not valid
      */
-    public WelcomeMessageListener(final JDA api, final BetonBotConfig config) {
+    public WelcomeMessageListener(final JDA api, @Nullable final String welcomeEmoji) {
         super();
-        this.emoji = getEmoji(config.welcomeEmoji);
-
-        if (emoji != null) {
-            api.addEventListener(this);
-        }
+        this.emoji = getEmoji(welcomeEmoji);
+        api.addEventListener(this);
     }
 
     @Override
@@ -50,12 +42,14 @@ public class WelcomeMessageListener extends ListenerAdapter {
         }
     }
 
-    private Emoji getEmoji(final String stringEmoji) {
+    private Emoji getEmoji(@Nullable final String stringEmoji) {
+        if (stringEmoji == null) {
+            throw new IllegalArgumentException("No welcome emoji was set!");
+        }
         try {
             return Emoji.fromFormatted(stringEmoji);
         } catch (final IllegalArgumentException e) {
-            LOGGER.warn("No welcome emoji was found or set! Reason: {}", e.getMessage());
-            return null;
+            throw new IllegalStateException("The welcome emoji '" + stringEmoji + "' is not valid!", e);
         }
     }
 }

@@ -1,6 +1,7 @@
 package org.betonquest.discordbot.modules.support;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
@@ -11,6 +12,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.betonquest.discordbot.config.BetonBotConfig;
 import org.betonquest.discordbot.modules.ForumTagHolder;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
@@ -47,14 +49,15 @@ public class ThreadAutoCloseScheduler extends ListenerAdapter implements Runnabl
      *
      * @param api    the {@link JDA} instance
      * @param config the {@link BetonBotConfig} instance
+     * @param guild  the {@link Guild} in which the support channels are located
      */
-    public ThreadAutoCloseScheduler(final JDA api, final BetonBotConfig config) {
+    public ThreadAutoCloseScheduler(final JDA api, final BetonBotConfig config, final Guild guild) {
         super();
         this.executorService = Executors.newScheduledThreadPool(1);
         this.config = config;
 
         supportForums = config.supportChannelIDs.stream()
-                .map(id -> config.getGuild().getChannelById(ForumChannel.class, id))
+                .map(id -> guild.getChannelById(ForumChannel.class, id))
                 .filter(Objects::nonNull)
                 .toList();
 
@@ -117,7 +120,8 @@ public class ThreadAutoCloseScheduler extends ListenerAdapter implements Runnabl
      * @param message the last message
      * @return the last message not sent from the bot itself
      */
-    private Message getLastForeignMessage(final ThreadChannel channel, final Message message) {
+    @Nullable
+    private Message getLastForeignMessage(final ThreadChannel channel, @Nullable final Message message) {
         if (Objects.isNull(message)) {
             return null;
         }

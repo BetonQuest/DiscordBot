@@ -1,8 +1,7 @@
 package org.betonquest.discordbot.config;
 
 import com.google.common.collect.Lists;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.DumperOptions;
@@ -28,6 +27,7 @@ public class BetonBotConfig {
     /**
      * The token to connect to Discord.
      */
+    @Nullable
     public final String token;
 
     /**
@@ -43,6 +43,7 @@ public class BetonBotConfig {
     /**
      * The emoji to react on discords welcome message.
      */
+    @Nullable
     public final String welcomeEmoji;
 
     /**
@@ -86,11 +87,6 @@ public class BetonBotConfig {
     public final int supportAutoCloseTimeout;
 
     /**
-     * The {@link Guild} of the Discord managed by this bot.
-     */
-    private Guild guild;
-
-    /**
      * @param configPath the path of the config file
      * @throws IOException is thrown, when reading or writing the file coursed problems.
      */
@@ -115,18 +111,6 @@ public class BetonBotConfig {
             config.put("UpdateCommands", false);
         }
         yaml.dump(config, Files.newBufferedWriter(configPath));
-    }
-
-    /**
-     * Init things that need a {@link JDA} instance
-     *
-     * @param api the {@link JDA} instance
-     */
-    public void init(final JDA api) {
-        guild = api.getGuildById(guildID);
-        if (guild == null) {
-            LOGGER.warn("No guild with the id '" + guildID + "' was found!");
-        }
     }
 
     private Yaml getYaml() {
@@ -185,16 +169,8 @@ public class BetonBotConfig {
                 getOrCreate(key, ConfigEmbedBuilder.getDefaultConfigEmbed(), config), key);
     }
 
+    @Nullable
     private String checkEmpty(final String string) {
         return string == null ? null : string.isEmpty() ? null : string;
-    }
-
-    /**
-     * Get the {@link Guild} of this bot.
-     *
-     * @return the {@link Guild}
-     */
-    public Guild getGuild() {
-        return guild;
     }
 }
