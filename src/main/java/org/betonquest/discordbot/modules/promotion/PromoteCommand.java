@@ -98,8 +98,8 @@ public class PromoteCommand extends ListenerAdapter {
             return;
         }
 
-        final Long highestRoleOfExecutor = promotionRolesOfExecutor.getLast().getIdLong();
-        if (noBypassRole && config.promotionRanks.getFirst().equals(highestRoleOfExecutor)) {
+        final Long highestRoleOfExecutor = getLast(promotionRolesOfExecutor).getIdLong();
+        if (noBypassRole && getFirst(config.promotionRanks).equals(highestRoleOfExecutor)) {
             event.reply("There are no roles below you in the Promotion Ladder. You cannot use this command.")
                     .setEphemeral(true).queue();
             return;
@@ -108,14 +108,14 @@ public class PromoteCommand extends ListenerAdapter {
         final List<Role> promotionRolesOfTarget = filterAndSortByPromotionLadder(promotionTarget.getRoles());
 
         final Long highestRoleIdOfTarget = promotionRolesOfTarget.isEmpty()
-                ? -1
-                : promotionRolesOfTarget.getLast().getIdLong();
+                ? -1L
+                : getLast(promotionRolesOfTarget).getIdLong();
 
         final int indexOfHighestExecutorRole = config.promotionRanks.indexOf(highestRoleOfExecutor);
         final int indexOfHighestTargetRole = config.promotionRanks.indexOf(highestRoleIdOfTarget);
         if (noBypassRole && indexOfHighestTargetRole >= indexOfHighestExecutorRole) {
-            event.reply("The target user is already ranked higher or equally high ranked as you.\n" +
-                            "You can only rank up to one role lower than yourself.")
+            event.reply("The target user is already ranked higher or equally high ranked as you.\n"
+                            + "You can only rank up to one role lower than yourself.")
                     .setEphemeral(true).queue();
             return;
         }
@@ -163,5 +163,13 @@ public class PromoteCommand extends ListenerAdapter {
                 .filter(role -> config.promotionRanks.contains(role.getIdLong()))
                 .sorted(Comparator.comparingInt(role -> config.promotionRanks.indexOf(role.getIdLong())))
                 .toList();
+    }
+
+    private <T> T getFirst(List<T> list) {
+        return list.get(0);
+    }
+
+    private <T> T getLast(List<T> list) {
+        return list.get(list.size() - 1);
     }
 }

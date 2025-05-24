@@ -102,6 +102,8 @@ public class BetonBotConfig {
     public final List<Long> promotionBypassRoles;
 
     /**
+     * Create a new Instance of the Configuration Class
+     *
      * @param configPath the path of the config file
      * @throws IOException is thrown, when reading or writing the file coursed problems.
      */
