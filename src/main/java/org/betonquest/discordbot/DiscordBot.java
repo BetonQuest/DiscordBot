@@ -2,6 +2,7 @@ package org.betonquest.discordbot;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.betonquest.discordbot.config.BetonBotConfig;
@@ -61,14 +62,24 @@ public final class DiscordBot {
             LOGGER.error("Waited for state Ready, but there was an exception! Exception: ", e);
             return;
         }
-        config.init(api);
-        config.getGuild().loadMembers().get();
+        final Guild guild = api.getGuildById(config.guildID);
+        if (guild == null) {
+            LOGGER.error("No guild with the id '{}' was found!", config.guildID);
+            return;
+        }
+        guild.loadMembers().get();
 
-        new WelcomeMessageListener(api, config);
+        try {
+            new WelcomeMessageListener(api, config.welcomeEmoji);
+        } catch (IllegalArgumentException e) {
+            LOGGER.info(e.getMessage(), e);
+        } catch (IllegalStateException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
         new SolveCommand(api, config);
         new NewThreadListener(api, config);
         new ThreadUpdateListener(api, config);
 
-        new ThreadAutoCloseScheduler(api, config);
+        new ThreadAutoCloseScheduler(api, config, guild);
     }
 }

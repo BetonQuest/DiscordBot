@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Triple;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,46 +33,55 @@ public class ConfigEmbedBuilder {
     /**
      * The embeds' color.
      */
+    @Nullable
     private final String color;
 
     /**
      * The embeds' title.
      */
+    @Nullable
     private final String title;
 
     /**
      * The embeds' titleUrl.
      */
+    @Nullable
     private final String titleUrl;
 
     /**
      * The embeds' author.
      */
+    @Nullable
     private final String author;
 
     /**
      * The embeds' authorUrl.
      */
+    @Nullable
     private final String authorUrl;
 
     /**
      * The embeds' authorIconUrl.
      */
+    @Nullable
     private final String authorIconUrl;
 
     /**
      * The embeds' imageUrl.
      */
+    @Nullable
     private final String imageUrl;
 
     /**
      * The embeds' thumbnailUrl.
      */
+    @Nullable
     private final String thumbnailUrl;
 
     /**
      * The embeds' description.
      */
+    @Nullable
     private final String description;
 
     /**
@@ -82,11 +92,13 @@ public class ConfigEmbedBuilder {
     /**
      * The embeds' footer.
      */
+    @Nullable
     private final String footer;
 
     /**
      * The embeds' footerIconUrl.
      */
+    @Nullable
     private final String footerIconUrl;
 
     /**
@@ -187,7 +199,8 @@ public class ConfigEmbedBuilder {
     }
 
     @SuppressWarnings("unchecked")
-    private String getMultiLineString(final Map<String, Object> embedData, final String key) {
+    @Nullable
+    private String getMultiLineString(final Map<String, Object> embedData, @Nullable final String key) {
         final List<String> fieldValue = (List<String>) embedData.getOrDefault(key, null);
         return fieldValue == null ? null : StringUtils.join(fieldValue, "\n");
     }
@@ -250,7 +263,8 @@ public class ConfigEmbedBuilder {
      * @param input the input string
      * @return the replaced string
      */
-    public String resolveVariables(final String input) {
+    @Nullable
+    public String resolveVariables(@Nullable final String input) {
         if (input == null) {
             return null;
         }
