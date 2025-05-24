@@ -6,16 +6,18 @@ charset = utf-8
 insert_final_newline = true
 indent_style = space
 indent_size = 2
-#The line ending lf is only checked in the build pipeline. Don't remove this and the following line.
-#end_of_line = lf
-[docs/_media/**]
-#end_of_line = unset
 
-[*.yml]
+[{LICENSE,mvnw, mvnw.cmd,/.idea/**}]
+insert_final_newline = unset
+indent_style = unset
+indent_size = unset
+
+[CHANGELOG.md]
 indent_size = 4
 
 [*.java]
 indent_size = 4
+ij_continuation_indent_size = 8
 trim_trailing_whitespace = true
 max_line_length = 120
 curly_bracket_next_line = false
@@ -26,3 +28,11 @@ continuation_indent_size = 8
 line_comment = //
 block_comment_start = /*
 block_comment_end = */
+
+[*.py]
+indent_size = 4
+
+# Ignore Python Virtualenv files
+[/{lib,venv,.venv}/**]
+indent_style = unset
+indent_size = unset
