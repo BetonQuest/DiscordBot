@@ -87,6 +87,21 @@ public class BetonBotConfig {
     public final int supportAutoCloseTimeout;
 
     /**
+     * A ordered List of Roles contained in the Promotion Ladder.
+     */
+    public final List<Long> promotionRanks;
+
+    /**
+     * The message to show when a User was promoted to a new rank.
+     */
+    public final ConfigEmbedBuilder promotionEmbed;
+
+    /**
+     * A List of Roles that can bypass checks in the Promotion System.
+     */
+    public final List<Long> promotionBypassRoles;
+
+    /**
      * @param configPath the path of the config file
      * @throws IOException is thrown, when reading or writing the file coursed problems.
      */
@@ -106,6 +121,9 @@ public class BetonBotConfig {
         supportSolvedEmbed = getOrCreateEmbed("Support.SolvedMessage", config);
         supportAutoCloseCheckInterval = getOrCreate("Support.AutoCloseCheckInterval", 20, config);
         supportAutoCloseTimeout = getOrCreate("Support.AutoCloseTimeout", 15, config);
+        promotionRanks = getOrCreate("Promotion.Ranks", Lists.newArrayList(-1L), config);
+        promotionEmbed = getOrCreateEmbed("Promotion.PromotionMessage", config);
+        promotionBypassRoles = getOrCreate("Promotion.BypassRoles", Lists.newArrayList(-1L), config);
 
         if (updateCommands) {
             config.put("UpdateCommands", false);

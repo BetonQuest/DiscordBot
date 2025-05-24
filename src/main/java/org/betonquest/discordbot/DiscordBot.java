@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.betonquest.discordbot.config.BetonBotConfig;
+import org.betonquest.discordbot.modules.promotion.*;
 import org.betonquest.discordbot.modules.support.NewThreadListener;
 import org.betonquest.discordbot.modules.support.SolveCommand;
 import org.betonquest.discordbot.modules.support.ThreadAutoCloseScheduler;
@@ -81,5 +82,7 @@ public final class DiscordBot {
         new ThreadUpdateListener(api, config);
 
         new ThreadAutoCloseScheduler(api, config, guild);
+
+        new PromoteCommand(api, config);
     }
 }

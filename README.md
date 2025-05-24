@@ -29,3 +29,11 @@ We use [JDA (Java Discord API)](https://github.com/DV8FromTheWorld/JDA) as the B
     - a tag to mark solved posts
     - tags to keep when a post is solved
     - a order by which tags are sorted
+
+- Promotion System:
+  - Ranks:
+    - A List of roles handled in the promotion system
+    - Sorted from lowest (top) to highest (down)
+  - a message as an embed, when a user is promoted. Supports placeholders: "%user%", "%newRole%", "%promoter%"
+  - Bypass-Roles:
+    - A List of roles that can circumvent all permission checks
