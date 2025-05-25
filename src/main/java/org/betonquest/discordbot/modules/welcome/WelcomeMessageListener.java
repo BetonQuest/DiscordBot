@@ -20,10 +20,10 @@ public class WelcomeMessageListener extends ListenerAdapter {
     /**
      * Create a new {@link WelcomeMessageListener}
      *
-     * @param api    the {@link JDA} instance
+     * @param api          the {@link JDA} instance
      * @param welcomeEmoji the welcome emoji to send to every new member
      * @throws IllegalArgumentException if the welcome emoji is null
-     * @throws IllegalStateException if the welcome emoji is not valid
+     * @throws IllegalStateException    if the welcome emoji is not valid
      */
     public WelcomeMessageListener(final JDA api, @Nullable final String welcomeEmoji) {
         super();

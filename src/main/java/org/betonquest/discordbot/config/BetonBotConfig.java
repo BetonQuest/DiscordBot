@@ -33,7 +33,7 @@ public class BetonBotConfig {
     /**
      * The guild id for the target Discord server.
      */
-    public final Long guildID;
+    public final long guildID;
 
     /**
      * Should the commands be registered again.
@@ -59,12 +59,12 @@ public class BetonBotConfig {
     /**
      * The Tag-ID to apply to solved Support Posts.
      */
-    public final Long supportTagsSolved;
+    public final long supportTagsSolved;
 
     /**
      * The Tag-ID to apply to Support Posts by default if no tag is set.
      */
-    public final Long supportTagsDefault;
+    public final long supportTagsDefault;
 
     /**
      * An Order by which ForumTags are sorted when applied to Support Posts.
@@ -87,6 +87,28 @@ public class BetonBotConfig {
     public final int supportAutoCloseTimeout;
 
     /**
+     * A ordered List of Roles contained in the Promotion Ladder.
+     */
+    public final List<Long> promotionRanks;
+
+    /**
+     * The message to show when a User was promoted to a new rank.
+     */
+    public final ConfigEmbedBuilder promotionEmbed;
+
+    /**
+     * A List of Roles that can bypass checks in the Promotion System.
+     */
+    public final List<Long> promotionBypassRoles;
+
+    /**
+     * The cooldown in seconds before a User can be promoted again.
+     */
+    public final int promotionCooldown;
+
+    /**
+     * Create a new Instance of the Configuration Class.
+     *
      * @param configPath the path of the config file
      * @throws IOException is thrown, when reading or writing the file coursed problems.
      */
@@ -106,6 +128,10 @@ public class BetonBotConfig {
         supportSolvedEmbed = getOrCreateEmbed("Support.SolvedMessage", config);
         supportAutoCloseCheckInterval = getOrCreate("Support.AutoCloseCheckInterval", 20, config);
         supportAutoCloseTimeout = getOrCreate("Support.AutoCloseTimeout", 15, config);
+        promotionRanks = getOrCreate("Promotion.Ranks", Lists.newArrayList(-1L), config);
+        promotionEmbed = getOrCreateEmbed("Promotion.PromotionMessage", config);
+        promotionBypassRoles = getOrCreate("Promotion.BypassRoles", Lists.newArrayList(-1L), config);
+        promotionCooldown = getOrCreate("Promotion.Cooldown", 0, config);
 
         if (updateCommands) {
             config.put("UpdateCommands", false);
@@ -142,7 +168,7 @@ public class BetonBotConfig {
                     try {
                         return (T) value;
                     } catch (final Exception e) {
-                        LOGGER.warn("Could not cast Config Entry '" + key + "'. Using default one.", e);
+                        LOGGER.warn("Could not cast Config Entry '{}'. Using default one.", key, e);
                     }
                 }
             }

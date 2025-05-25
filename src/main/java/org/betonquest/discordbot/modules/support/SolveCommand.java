@@ -8,8 +8,10 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.betonquest.discordbot.config.BetonBotConfig;
 import org.betonquest.discordbot.modules.ForumTagHolder;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,14 +50,17 @@ public class SolveCommand extends ListenerAdapter {
         if (config.supportSolvedEmbed == null) {
             LOGGER.warn("No support closed message was found or set!");
         }
-
-        if (config.updateCommands) {
-            api.updateCommands().addCommands(
-                    Commands.slash(COMMAND, "Mark a support thread as solved.")
-                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
-            ).queue();
-        }
         api.addEventListener(this);
+    }
+
+    /**
+     * Get the slash command data for this command.
+     *
+     * @return The slash command data
+     */
+    public @NotNull SlashCommandData getSlashCommandData() {
+        return Commands.slash(COMMAND, "Mark a support thread as solved.")
+                .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
     }
 
     @Override
