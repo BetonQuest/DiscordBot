@@ -1,26 +1,30 @@
 package org.betonquest.discordbot.modules.promotion;
 
-import java.util.*;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import org.betonquest.discordbot.config.BetonBotConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.betonquest.discordbot.config.*;
-import org.slf4j.*;
-
-import net.dv8tion.jda.api.*;
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.interaction.command.*;
-import net.dv8tion.jda.api.hooks.*;
-import net.dv8tion.jda.api.interactions.commands.*;
-import net.dv8tion.jda.api.interactions.commands.build.*;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * A `promote` command to promote users up in a ranking ladder
  */
 public class PromoteCommand extends ListenerAdapter {
-    /**
-     * Logger instance.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(PromoteCommand.class);
-
     /**
      * The command name.
      */
@@ -32,19 +36,31 @@ public class PromoteCommand extends ListenerAdapter {
     public static final String USER_OPTION_NAME = "user";
 
     /**
+     * Logger instance.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(PromoteCommand.class);
+
+    /**
      * The {@link BetonBotConfig} instance.
      */
     private final BetonBotConfig config;
 
     /**
+     * The {@link PromotionCache} instance to manage user promotions.
+     */
+    private final PromotionCache promotionCache;
+
+    /**
      * Create a new `promote` command instance.
      *
-     * @param api    The {@link JDA} instance
-     * @param config The {@link BetonBotConfig} instance
+     * @param api            The {@link JDA} instance
+     * @param config         The {@link BetonBotConfig} instance
+     * @param promotionCache The {@link PromotionCache} instance to manage user promotions
      */
-    public PromoteCommand(final JDA api, final BetonBotConfig config) {
+    public PromoteCommand(final JDA api, final BetonBotConfig config, final PromotionCache promotionCache) {
         super();
         this.config = config;
+        this.promotionCache = promotionCache;
         if (config.promotionRanks.isEmpty()) {
             LOGGER.warn("No support channels where found or set!");
             return;
@@ -63,6 +79,7 @@ public class PromoteCommand extends ListenerAdapter {
         api.addEventListener(this);
     }
 
+    @SuppressWarnings({"PMD.NPathComplexity", "PMD.CyclomaticComplexity", "PMD.CognitiveComplexity"})
     @Override
     public void onSlashCommandInteraction(final SlashCommandInteractionEvent event) {
         if (!COMMAND.equals(event.getName())) {
@@ -133,6 +150,16 @@ public class PromoteCommand extends ListenerAdapter {
             return;
         }
 
+        if (!promotionCache.isPromotable(promotionTarget)) {
+            final Duration cooldown = Duration.of(config.promotionCooldown, ChronoUnit.SECONDS);
+            final String readableCooldown = String.format("%d days %d hours %d minutes",
+                    cooldown.toDaysPart(), cooldown.toHoursPart() % 24, cooldown.toMinutesPart() % 60);
+            event.reply("The user was previously promoted and is still on cooldown.\n"
+                            + "Promotions are only allowed every " + readableCooldown + ".")
+                    .setEphemeral(true).queue();
+            return;
+        }
+
         final Long newRoleIdOfTarget = config.promotionRanks.get(indexOfNewRoleOfTarget);
         addRoleToUser(event, newRoleIdOfTarget, promotionTarget, cmdExecutor);
     }
@@ -165,11 +192,11 @@ public class PromoteCommand extends ListenerAdapter {
                 .toList();
     }
 
-    private <T> T getFirst(List<T> list) {
+    private <T> T getFirst(final List<T> list) {
         return list.get(0);
     }
 
-    private <T> T getLast(List<T> list) {
+    private <T> T getLast(final List<T> list) {
         return list.get(list.size() - 1);
     }
 }

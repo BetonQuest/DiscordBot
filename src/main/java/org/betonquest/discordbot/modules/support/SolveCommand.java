@@ -18,14 +18,14 @@ import org.slf4j.LoggerFactory;
  */
 public class SolveCommand extends ListenerAdapter {
     /**
-     * Logger instance.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(SolveCommand.class);
-
-    /**
      * The command name.
      */
     public static final String COMMAND = "solve";
+
+    /**
+     * Logger instance.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(SolveCommand.class);
 
     /**
      * The {@link BetonBotConfig} instance.

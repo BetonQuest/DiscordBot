@@ -102,6 +102,11 @@ public class BetonBotConfig {
     public final List<Long> promotionBypassRoles;
 
     /**
+     * The cooldown in seconds before a User can be promoted again.
+     */
+    public final Long promotionCooldown;
+
+    /**
      * Create a new Instance of the Configuration Class
      *
      * @param configPath the path of the config file
@@ -126,6 +131,7 @@ public class BetonBotConfig {
         promotionRanks = getOrCreate("Promotion.Ranks", Lists.newArrayList(-1L), config);
         promotionEmbed = getOrCreateEmbed("Promotion.PromotionMessage", config);
         promotionBypassRoles = getOrCreate("Promotion.BypassRoles", Lists.newArrayList(-1L), config);
+        promotionCooldown = getOrCreate("Promotion.Cooldown", 0L, config);
 
         if (updateCommands) {
             config.put("UpdateCommands", false);
@@ -162,7 +168,7 @@ public class BetonBotConfig {
                     try {
                         return (T) value;
                     } catch (final Exception e) {
-                        LOGGER.warn("Could not cast Config Entry '" + key + "'. Using default one.", e);
+                        LOGGER.warn("Could not cast Config Entry '{}'. Using default one.", key, e);
                     }
                 }
             }

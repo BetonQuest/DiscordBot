@@ -15,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.OffsetDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -84,7 +83,7 @@ public class ThreadAutoCloseScheduler extends ListenerAdapter implements Runnabl
      */
     @Override
     public void run() {
-        final OffsetDateTime timeout = OffsetDateTime.now().minus(config.supportAutoCloseTimeout, ChronoUnit.MINUTES);
+        final OffsetDateTime timeout = OffsetDateTime.now().minusMinutes(config.supportAutoCloseTimeout);
         supportForums.stream()
                 .map(IThreadContainer::getThreadChannels)
                 .flatMap(Collection::stream)
