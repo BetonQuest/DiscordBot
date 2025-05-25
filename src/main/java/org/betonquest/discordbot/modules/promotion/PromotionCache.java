@@ -54,7 +54,14 @@ public class PromotionCache {
     public PromotionCache(final Path cachePath, final BetonBotConfig config) throws IOException {
         this.cachePath = cachePath;
         this.yaml = getYaml();
-        this.promotions = getConfig(yaml, cachePath);
+        this.promotions = new LinkedHashMap<>();
+        for (final Map.Entry<Object, Object> entry : getConfig(yaml, cachePath).entrySet()) {
+            if (entry.getKey() instanceof final Number user && entry.getValue() instanceof final Number time) {
+                promotions.put(user.longValue(), time.longValue());
+            } else {
+                LOGGER.warn("Invalid entry in promotion cache: {} -> {}", entry.getKey(), entry.getValue());
+            }
+        }
         this.promotionCooldown = config.promotionCooldown;
     }
 
@@ -67,7 +74,7 @@ public class PromotionCache {
     public boolean isPromotable(final Member member) {
         final long userID = member.getIdLong();
         final long currentTime = Instant.now().getEpochSecond();
-        final Long lastTime = promotions.getOrDefault(userID, -1L);
+        final Long lastTime = promotions.getOrDefault(userID, 0L);
         if (lastTime + promotionCooldown < currentTime) {
             promotions.put(userID, currentTime);
             try {
@@ -81,6 +88,21 @@ public class PromotionCache {
         }
     }
 
+    /**
+     * Gets the time stamp of the next possible promotion for a user.
+     *
+     * @param member the member to check
+     * @return the time in seconds until the next promotion can occur
+     */
+    public long getTimeOfNextPromotion(final Member member) {
+        final long userID = member.getIdLong();
+        final Long lastTime = promotions.getOrDefault(userID, 0L);
+        if (lastTime == 0) {
+            return Instant.now().getEpochSecond();
+        }
+        return lastTime + promotionCooldown;
+    }
+
     private Yaml getYaml() {
         final DumperOptions options = new DumperOptions();
         options.setIndent(4);
@@ -90,7 +112,7 @@ public class PromotionCache {
         return new Yaml(options);
     }
 
-    private Map<Long, Long> getConfig(final Yaml yaml, final Path cachePath) throws IOException {
+    private Map<Object, Object> getConfig(final Yaml yaml, final Path cachePath) throws IOException {
         if (Files.exists(cachePath)) {
             return yaml.load(Files.newInputStream(cachePath));
         } else {

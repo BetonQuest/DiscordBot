@@ -13,13 +13,12 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.utils.TimeFormat;
 import org.betonquest.discordbot.config.BetonBotConfig;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
 
@@ -156,11 +155,9 @@ public class PromoteCommand extends ListenerAdapter {
         }
 
         if (!promotionCache.isPromotable(promotionTarget)) {
-            final Duration cooldown = Duration.of(config.promotionCooldown, ChronoUnit.SECONDS);
-            final String readableCooldown = String.format("%d days %d hours %d minutes",
-                    cooldown.toDaysPart(), cooldown.toHoursPart() % 24, cooldown.toMinutesPart() % 60);
+            final String time = TimeFormat.RELATIVE.format(promotionCache.getTimeOfNextPromotion(promotionTarget) * 1000);
             event.reply("The user was previously promoted and is still on cooldown.\n"
-                            + "Promotions are only allowed every " + readableCooldown + ".")
+                            + "The next promotion is possible " + time + ".")
                     .setEphemeral(true).queue();
             return;
         }
