@@ -12,7 +12,9 @@ import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.betonquest.discordbot.config.BetonBotConfig;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,15 +70,18 @@ public class PromoteCommand extends ListenerAdapter {
         if (config.promotionEmbed == null) {
             LOGGER.warn("No support closed message was found or set!");
         }
-
-        if (config.updateCommands) {
-            api.updateCommands().addCommands(
-                    Commands.slash(COMMAND, "Promote a player up the ranking ladder.")
-                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
-                            .addOption(OptionType.USER, USER_OPTION_NAME, "The User to promote", true)
-            ).queue();
-        }
         api.addEventListener(this);
+    }
+
+    /**
+     * Get the slash command data for this command.
+     *
+     * @return The slash command data
+     */
+    public @NotNull SlashCommandData getSlashCommandData() {
+        return Commands.slash(COMMAND, "Promote a player up the ranking ladder.")
+                .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
+                .addOption(OptionType.USER, USER_OPTION_NAME, "The User to promote", true);
     }
 
     @SuppressWarnings({"PMD.NPathComplexity", "PMD.CyclomaticComplexity", "PMD.CognitiveComplexity"})

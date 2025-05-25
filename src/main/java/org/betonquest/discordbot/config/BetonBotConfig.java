@@ -33,7 +33,7 @@ public class BetonBotConfig {
     /**
      * The guild id for the target Discord server.
      */
-    public final Long guildID;
+    public final long guildID;
 
     /**
      * Should the commands be registered again.
@@ -59,12 +59,12 @@ public class BetonBotConfig {
     /**
      * The Tag-ID to apply to solved Support Posts.
      */
-    public final Long supportTagsSolved;
+    public final long supportTagsSolved;
 
     /**
      * The Tag-ID to apply to Support Posts by default if no tag is set.
      */
-    public final Long supportTagsDefault;
+    public final long supportTagsDefault;
 
     /**
      * An Order by which ForumTags are sorted when applied to Support Posts.
@@ -104,10 +104,10 @@ public class BetonBotConfig {
     /**
      * The cooldown in seconds before a User can be promoted again.
      */
-    public final Long promotionCooldown;
+    public final int promotionCooldown;
 
     /**
-     * Create a new Instance of the Configuration Class
+     * Create a new Instance of the Configuration Class.
      *
      * @param configPath the path of the config file
      * @throws IOException is thrown, when reading or writing the file coursed problems.
@@ -131,7 +131,7 @@ public class BetonBotConfig {
         promotionRanks = getOrCreate("Promotion.Ranks", Lists.newArrayList(-1L), config);
         promotionEmbed = getOrCreateEmbed("Promotion.PromotionMessage", config);
         promotionBypassRoles = getOrCreate("Promotion.BypassRoles", Lists.newArrayList(-1L), config);
-        promotionCooldown = getOrCreate("Promotion.Cooldown", 0L, config);
+        promotionCooldown = getOrCreate("Promotion.Cooldown", 0, config);
 
         if (updateCommands) {
             config.put("UpdateCommands", false);

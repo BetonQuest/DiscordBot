@@ -42,7 +42,7 @@ public class PromotionCache {
     /**
      * The cooldown period in seconds before a user can be promoted again.
      */
-    private final Long promotionCooldown;
+    private final int promotionCooldown;
 
     /**
      * Creates a new PromotionCache instance.

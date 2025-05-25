@@ -52,7 +52,6 @@ public final class DiscordBot {
                     .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
                     .setMemberCachePolicy(MemberCachePolicy.ALL)
                     .build();
-
         } catch (final IOException e) {
             LOGGER.error("Could not read the config file 'config.yml'! Reason: ", e);
             return;
@@ -73,22 +72,32 @@ public final class DiscordBot {
 
         try {
             new WelcomeMessageListener(api, config.welcomeEmoji);
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             LOGGER.info(e.getMessage(), e);
-        } catch (IllegalStateException e) {
+        } catch (final IllegalStateException e) {
             LOGGER.error(e.getMessage(), e);
         }
-        new SolveCommand(api, config);
+        final SolveCommand solveCommand = new SolveCommand(api, config);
         new NewThreadListener(api, config);
         new ThreadUpdateListener(api, config);
 
         new ThreadAutoCloseScheduler(api, config, guild);
 
+        final PromoteCommand promoteCommand;
         try {
             final PromotionCache promotionCache = new PromotionCache(Paths.get("promotionCache.yml"), config);
-            new PromoteCommand(api, config, promotionCache);
+            promoteCommand = new PromoteCommand(api, config, promotionCache);
         } catch (final IOException e) {
             LOGGER.error("Could not read the promotion cache file 'promotionCache.yml'! Reason: ", e);
+            return;
         }
+
+        if (config.updateCommands) {
+            api.updateCommands().addCommands(
+                    solveCommand.getSlashCommandData(),
+                    promoteCommand.getSlashCommandData()
+            ).queue(commands -> LOGGER.info("Updated commands!"));
+        }
+        LOGGER.info("DiscordBot is ready!");
     }
 }
