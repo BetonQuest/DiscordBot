@@ -40,6 +40,7 @@ public final class DiscordBot {
      * @param args The args from the vm start
      */
     public static void main(final String[] args) {
+        LOGGER.info("Starting Discord Bot ...");
         final BetonBotConfig config;
         final JDA api;
         try {
