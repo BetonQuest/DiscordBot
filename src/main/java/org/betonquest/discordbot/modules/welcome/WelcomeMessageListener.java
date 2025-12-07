@@ -36,7 +36,7 @@ public class WelcomeMessageListener extends ListenerAdapter {
         if (event.getAuthor().isBot()) {
             return;
         }
-        if (event.getMessage().getType().equals(MessageType.GUILD_MEMBER_JOIN)) {
+        if (event.getMessage().getType() == MessageType.GUILD_MEMBER_JOIN) {
             final Message message = event.getMessage();
             message.addReaction(this.emoji).queue();
         }

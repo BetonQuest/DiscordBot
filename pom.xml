@@ -6,13 +6,12 @@
   <parent>
     <groupId>org.betonquest</groupId>
     <artifactId>parent</artifactId>
-    <version>1.7.2</version>
+    <version>2.2.1</version>
   </parent>
 
   <properties>
     <revision>1.0.0</revision>
     <changelist>-SNAPSHOT</changelist>
-    <java.api.version>17</java.api.version>
   </properties>
 
   <name>DiscordBot</name>
@@ -43,13 +42,17 @@
   <dependencies>
     <!-- only dependencies from maven central -->
     <dependency>
-      <groupId>com.github.DV8FromTheWorld</groupId>
+      <groupId>net.dv8tion</groupId>
       <artifactId>JDA</artifactId>
-      <version>v5.5.1</version>
+      <version>6.1.2</version>
       <exclusions>
         <exclusion>
           <groupId>club.minnced</groupId>
           <artifactId>opus-java</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.google.crypto.tink</groupId>
+          <artifactId>tink</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

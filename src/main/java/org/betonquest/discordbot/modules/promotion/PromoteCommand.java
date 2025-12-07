@@ -83,7 +83,7 @@ public class PromoteCommand extends ListenerAdapter {
                 .addOption(OptionType.USER, USER_OPTION_NAME, "The User to promote", true);
     }
 
-    @SuppressWarnings({"PMD.NPathComplexity", "PMD.CyclomaticComplexity", "PMD.CognitiveComplexity"})
+    @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.CognitiveComplexity"})
     @Override
     public void onSlashCommandInteraction(final SlashCommandInteractionEvent event) {
         if (!COMMAND.equals(event.getName())) {

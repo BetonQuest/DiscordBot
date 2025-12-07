@@ -68,7 +68,7 @@ public class SolveCommand extends ListenerAdapter {
         if (!COMMAND.equals(event.getName())) {
             return;
         }
-        if (!(event.getChannelType().equals(ChannelType.GUILD_PUBLIC_THREAD) || event.getChannelType().equals(ChannelType.GUILD_PRIVATE_THREAD))
+        if (!(event.getChannelType() == ChannelType.GUILD_PUBLIC_THREAD || event.getChannelType() == ChannelType.GUILD_PRIVATE_THREAD)
                 || !config.supportChannelIDs.contains(((ThreadChannel) event.getChannel()).getParentChannel().getIdLong())) {
             event.reply("This command is only supported in threads in a channel that is a support channel!")
                     .setEphemeral(true)
