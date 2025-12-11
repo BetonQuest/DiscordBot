@@ -45,7 +45,7 @@ public class NewThreadListener extends ListenerAdapter {
 
     @Override
     public void onChannelCreate(final ChannelCreateEvent event) {
-        if (!(event.getChannelType().equals(ChannelType.GUILD_PUBLIC_THREAD) || event.getChannelType().equals(ChannelType.GUILD_PRIVATE_THREAD))
+        if (!(event.getChannelType() == ChannelType.GUILD_PUBLIC_THREAD || event.getChannelType() == ChannelType.GUILD_PRIVATE_THREAD)
                 || !config.supportChannelIDs.contains(((ThreadChannel) event.getChannel()).getParentChannel().getIdLong())
                 || ((ThreadChannel) event.getChannel()).getSelfThreadMember() != null) {
             return;

@@ -20,8 +20,9 @@ jobs:
       - uses: BetonQuest/Workflows/.github/actions/version@main
         id: version
         with:
-          ROOT_REPOSITORY: BetonQuest/BetonQuestPlus
+          ROOT_REPOSITORY: BetonQuest/DiscordBot
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MAVEN_WRAPPER_DIR: '~/.m2/wrapper'
 
   build:
     name: Build
@@ -40,25 +41,26 @@ jobs:
       - uses: BetonQuest/Workflows/.github/actions/setup-java-maven@main
         with:
           JAVA_CACHE: 'maven'
-          MAVEN_TARGET_DIR: 'target/artifacts'
+          MAVEN_BUILD_DIR: 'target/code'
+          MAVEN_WRAPPER_DIR: '~/.m2/wrapper'
       - uses: BetonQuest/Workflows/.github/actions/replace-code-variables@main
         with:
           VERSION: ${{ env.VERSION }}
           VERSION_TYPE: ${{ env.VERSION_TYPE }}
-          VERSION_NAMESPACE: "Discordbot"
+          VERSION_NAMESPACE: "discordbot"
       - name: Build with Maven. Phase 'verify'
         shell: bash --noprofile --norc -euo pipefail {0}
         run: |
           if [ $VERSION_TYPE == 'release' ]; then CHANGELIST=-Dchangelist=; fi
           ./mvnw ${CHANGELIST-} -B verify
-          git diff > target/artifacts/changes.patch
-      - name: Upload Artifact
+          git diff > target/code/changes.patch
+      - name: Upload Code
         uses: actions/upload-artifact@v4
         with:
-          name: BetonQuestPlus-Artifacts
+          name: BetonQuestPlus-Code
           path: |
-            target/artifacts/DiscordBot.jar
-            target/artifacts/discordbot-*-*.jar
+            target/code/DiscordBot.jar
+            target/code/discordbot-*-*.jar
 
   deploy:
     name: Deploy Code

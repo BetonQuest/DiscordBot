@@ -161,21 +161,21 @@ public class BetonBotConfig {
         final int splitIndex = key.indexOf('.');
         final String firstKey = splitIndex == -1 ? key : key.substring(0, splitIndex);
         final String restKey = splitIndex == -1 ? null : key.substring(splitIndex + 1);
-        if (restKey == null) {
-            if (config.containsKey(firstKey)) {
-                final Object value = config.get(firstKey);
-                if (value != null) {
-                    try {
-                        return (T) value;
-                    } catch (final Exception e) {
-                        LOGGER.warn("Could not cast Config Entry '{}'. Using default one.", key, e);
-                    }
+        if (restKey != null) {
+            return getOrCreateSubConfig(defaultValue, config, firstKey, restKey);
+        }
+        if (config.containsKey(firstKey)) {
+            final Object value = config.get(firstKey);
+            if (value != null) {
+                try {
+                    return (T) value;
+                } catch (final Exception e) {
+                    LOGGER.warn("Could not cast Config Entry '{}'. Using default one.", key, e);
                 }
             }
-            config.put(key, defaultValue);
-            return defaultValue;
         }
-        return getOrCreateSubConfig(defaultValue, config, firstKey, restKey);
+        config.put(key, defaultValue);
+        return defaultValue;
     }
 
     @SuppressWarnings("unchecked")
