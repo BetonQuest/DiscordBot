@@ -55,7 +55,7 @@ jobs:
           ./mvnw ${CHANGELIST-} -B verify
           git diff > target/code/changes.patch
       - name: Upload Code
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: BetonQuestPlus-Code
           path: |
