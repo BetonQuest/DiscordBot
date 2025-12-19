@@ -27,15 +27,10 @@
     </license>
   </licenses>
 
-  <organization>
-    <name>BetonQuest Organisation</name>
-    <url>https://www.betonquest.org</url>
-  </organization>
-
   <repositories>
     <repository>
       <id>betonquest-repo</id>
-      <url>https://nexus.betonquest.org/repository/betonquest/</url>
+      <url>https://repo.betonquest.org/betonquest/</url>
     </repository>
   </repositories>
 
