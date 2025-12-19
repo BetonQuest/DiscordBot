@@ -57,7 +57,7 @@ jobs:
       - name: Upload Code
         uses: actions/upload-artifact@v6
         with:
-          name: BetonQuestPlus-Code
+          name: DiscordBot-Code
           path: |
             target/code/DiscordBot.jar
             target/code/discordbot-*-*.jar
