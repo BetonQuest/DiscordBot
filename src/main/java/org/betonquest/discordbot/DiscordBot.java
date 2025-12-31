@@ -78,7 +78,10 @@ public final class DiscordBot {
         } catch (final IllegalStateException e) {
             LOGGER.error(e.getMessage(), e);
         }
-        final SolveCommand solveCommand = new SolveCommand(api, config);
+        final SolveCommand solveCommand = new SolveCommand(api, config, "solve", "Mark a support thread as solved.",
+                () -> config.supportSolvedEmbed);
+        final SolveCommand closeCommand = new SolveCommand(api, config, "close", "Mark a support thread as closed.",
+                () -> config.supportClosedEmbed);
         new NewThreadListener(api, config);
         new ThreadUpdateListener(api, config);
 
@@ -96,6 +99,7 @@ public final class DiscordBot {
         if (config.updateCommands) {
             api.updateCommands().addCommands(
                     solveCommand.getSlashCommandData(),
+                    closeCommand.getSlashCommandData(),
                     promoteCommand.getSlashCommandData()
             ).queue(commands -> LOGGER.info("Updated commands!"));
         }

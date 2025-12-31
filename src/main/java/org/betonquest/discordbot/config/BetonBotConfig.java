@@ -57,6 +57,11 @@ public class BetonBotConfig {
     public final ConfigEmbedBuilder supportSolvedEmbed;
 
     /**
+     * The message to show, when a thread was marked as closed.
+     */
+    public final ConfigEmbedBuilder supportClosedEmbed;
+
+    /**
      * The Tag-ID to apply to solved Support Posts.
      */
     public final long supportTagsSolved;
@@ -126,6 +131,7 @@ public class BetonBotConfig {
         supportTagsToKeep = getOrCreate("Support.Tags.Keep", Lists.newArrayList(-1L), config);
         supportTagsOrder = getOrCreate("Support.Tags.Order", Lists.newArrayList(-1L), config);
         supportSolvedEmbed = getOrCreateEmbed("Support.SolvedMessage", config);
+        supportClosedEmbed = getOrCreateEmbed("Support.ClosedMessage", config);
         supportAutoCloseCheckInterval = getOrCreate("Support.AutoCloseCheckInterval", 20, config);
         supportAutoCloseTimeout = getOrCreate("Support.AutoCloseTimeout", 15, config);
         promotionRanks = getOrCreate("Promotion.Ranks", Lists.newArrayList(-1L), config);
