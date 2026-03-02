@@ -181,15 +181,15 @@ public class ConfigEmbedBuilder {
         embed.put("ThumbnailUrl", "https://Custom.Thumbnail/URL");
         embed.put("Description", Lists.newArrayList("Custom Description"));
 
-        final Map<String, Object> field1 = new LinkedHashMap<>();
-        field1.put("Name", "Custom Field");
-        field1.put("Value", Lists.newArrayList("Custom Field Value"));
-        field1.put("Inline", "false");
-        final Map<String, Object> field2 = new LinkedHashMap<>();
-        field2.put("Inline", "false");
+        final Map<String, Object> fieldOne = new LinkedHashMap<>();
+        fieldOne.put("Name", "Custom Field");
+        fieldOne.put("Value", Lists.newArrayList("Custom Field Value"));
+        fieldOne.put("Inline", "false");
+        final Map<String, Object> fieldTwo = new LinkedHashMap<>();
+        fieldTwo.put("Inline", "false");
         final List<Map<String, Object>> fields = new ArrayList<>();
-        fields.add(field1);
-        fields.add(field2);
+        fields.add(fieldOne);
+        fields.add(fieldTwo);
         embed.put("Fields", fields);
 
         embed.put("Footer", Lists.newArrayList("Custom Footer"));
@@ -278,7 +278,7 @@ public class ConfigEmbedBuilder {
     /**
      * This is a variable that should be replaced in a given string.
      */
-    private static class Variable {
+    private static final class Variable {
         /**
          * The character that indicates a variable placeholder.
          * This character needs to be before and after the actual placeholder.
@@ -301,7 +301,7 @@ public class ConfigEmbedBuilder {
          * @param placeholder the placeholder to replace
          * @param value       the value to replace
          */
-        public Variable(final String placeholder, final String value) {
+        private Variable(final String placeholder, final String value) {
             this.placeholder = placeholder;
             this.value = value;
         }
@@ -312,7 +312,7 @@ public class ConfigEmbedBuilder {
          * @param input the input string
          * @return the replaces string
          */
-        public String resolve(final String input) {
+        private String resolve(final String input) {
             return input.replaceAll(VARIABLE_INDICATOR + placeholder + VARIABLE_INDICATOR, value);
         }
     }
